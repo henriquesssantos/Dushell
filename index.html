@@ -1,0 +1,2546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0D1E4A">
+<title>Dushell — Plataforma B2B de Compras e Cotações · Protótipo Navegável</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ================= BASE ================= */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  color-scheme:light;
+  --navy:#0D1E4A;--navy2:#091634;--navy3:#16295C;
+  --blue:#2563EB;--blue-d:#1E4FD0;--blue-t:#E8EEFC;--blue-l:#5B8DEF;
+  --lav:#EEF1FB;--lav-l:#DDE4F6;
+  --ice:#F3F5FA;--card:#FFFFFF;
+  --ink:#101B38;--mut:#566179;--soft:#8A94AE;
+  --line:#E4E9F4;--line2:#D5DCEC;
+  --ok:#15803D;--ok-t:#E7F5EC;
+  --warn:#92610B;--warn-t:#FBF2DC;
+  --err:#C03434;--err-t:#FBEAEA;
+  --info:#1F5F9E;--info-t:#E7F1FB;
+  --mint-t:#E7F5EC;--mint:#15803D;
+}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Archivo',sans-serif;background:var(--ice);color:var(--ink);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Sora',sans-serif;line-height:1.22;letter-spacing:-.01em;text-wrap:balance}
+a{color:inherit;text-decoration:none;cursor:pointer}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
+input[type="checkbox"],input[type="radio"]{accent-color:var(--blue)}
+.mono{font-family:'IBM Plex Mono',monospace}
+img{display:block}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+svg{flex-shrink:0}
+.vh{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ================= FAIXA DE PROTÓTIPO ================= */
+.strip{height:30px;background:var(--navy2);color:#AEBBE0;display:flex;align-items:center;justify-content:center;gap:9px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;padding:0 12px;text-align:center}
+.strip .dot{width:6px;height:6px;border-radius:50%;background:var(--blue-l)}
+.strip b{color:#EAF0FF;font-weight:500}
+
+/* ================= BOOT FALLBACK ================= */
+.boot{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.boot-brand{display:flex;align-items:center;gap:10px;font-family:'Sora',sans-serif;font-weight:800;font-size:24px;color:var(--navy)}
+.boot-sub{color:var(--soft);font-size:13px}
+.boot-msg{margin-top:12px;background:var(--err-t);color:var(--err);padding:10px 16px;border-radius:8px;font-size:13px;max-width:420px;text-align:center}
+
+/* ================= LOGO ================= */
+.logo-sq{display:inline-flex;align-items:center;justify-content:center;background:#fff;color:var(--blue);border-radius:10px;font-family:'Sora',sans-serif;font-weight:800;flex-shrink:0;box-shadow:0 1px 3px rgba(9,22,52,.18)}
+.logo-sq.inv{background:var(--blue);color:#fff;box-shadow:none}
+
+/* ================= BOTÕES ================= */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 16px;border-radius:10px;border:1px solid transparent;font-weight:600;font-size:14px;transition:all .15s;line-height:1.3;white-space:nowrap}
+.btn svg{width:16px;height:16px}
+.btn-p{background:var(--blue);color:#fff}
+.btn-p:hover{background:var(--blue-d)}
+.btn-s{background:#fff;border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--blue);color:var(--blue)}
+.btn-g{background:transparent;color:var(--mut)}
+.btn-g:hover{background:#E9EDF6;color:var(--ink)}
+.btn-d{background:#fff;border-color:#EFC5C5;color:var(--err)}
+.btn-d:hover{background:var(--err-t)}
+.btn-dark{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:#EFF3FC}
+.btn-dark:hover{background:rgba(255,255,255,.16)}
+.btn-lg{padding:12px 22px;font-size:15px;border-radius:11px}
+.btn-sm{padding:6px 12px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.blk{width:100%}
+
+/* ================= FORMULÁRIOS ================= */
+.fld{margin-bottom:14px}
+.fld label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;color:#33406B}
+.fld label .opt{color:var(--soft);font-weight:500}
+.inp,.sel,.txa{width:100%;padding:10px 12px;border:1px solid var(--line2);border-radius:9px;background:#fff;outline:none;transition:border .15s, box-shadow .15s}
+.inp:focus,.sel:focus,.txa:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.14)}
+.inp.bad,.sel.bad{border-color:var(--err);box-shadow:0 0 0 3px rgba(192,52,52,.1)}
+.txa{resize:vertical;min-height:80px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px}
+.hint{font-size:12px;color:var(--soft);margin-top:6px;line-height:1.5}
+.chkline{display:flex;align-items:center;gap:9px;font-size:13.5px;padding:6px 0;cursor:pointer}
+.chkline input{width:16px;height:16px}
+.chkline.bad span{color:var(--err);font-weight:600}
+.form-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.doc-msg{font-size:11.5px;margin-top:4px;font-weight:600;line-height:1.4}
+.doc-msg.ok{color:var(--ok)}
+.doc-msg.err{color:var(--err)}
+
+.seg{display:flex;background:#E9EDF6;border-radius:12px;padding:4px;gap:4px;margin:14px 0 6px}
+.seg label{flex:1;text-align:center;padding:9px 10px;border-radius:9px;font-size:13.5px;font-weight:600;color:var(--mut);cursor:pointer;transition:all .15s;position:relative}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:#fff;color:var(--blue);box-shadow:0 1px 3px rgba(16,27,60,.14)}
+
+/* ================= STEPPER ================= */
+.steps{display:flex;margin:2px 0 24px}
+.steps .st{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+.steps .st::before{content:'';position:absolute;top:14px;left:-50%;width:100%;height:2px;background:var(--line2)}
+.steps .st:first-child::before{display:none}
+.steps .st.done::before,.steps .st.cur::before{background:var(--blue)}
+.steps .sn{width:28px;height:28px;border-radius:50%;border:2px solid var(--line2);background:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:var(--soft);position:relative;z-index:1}
+.steps .st.cur .sn{border-color:var(--blue);color:var(--blue)}
+.steps .st.done .sn{background:var(--blue);border-color:var(--blue);color:#fff}
+.steps .sl{font-size:11px;font-weight:600;color:var(--soft);text-align:center}
+.steps .st.cur .sl{color:var(--blue-d)}
+
+/* ================= BADGES / TAGS ================= */
+.bdg{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 11px;border-radius:999px;white-space:nowrap}
+.bdg svg{width:13px;height:13px}
+.st-ok{background:var(--ok-t);color:var(--ok)}
+.st-warn{background:var(--warn-t);color:var(--warn)}
+.st-err{background:var(--err-t);color:var(--err)}
+.st-info{background:var(--info-t);color:var(--info)}
+.st-mut{background:#EDF0F7;color:var(--mut)}
+.st-mint{background:var(--mint-t);color:var(--mint)}
+.st-cop{background:var(--blue-t);color:var(--blue-d)}
+.tag-rn{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--warn);background:var(--warn-t);border:1px dashed #E3CD96;padding:4px 9px;border-radius:6px}
+.tag-rn svg{width:12px;height:12px}
+.tag-fut{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--soft);border:1px dashed var(--line2);padding:4px 9px;border-radius:6px}
+.tag-fut svg{width:12px;height:12px}
+.disp{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.disp .d{width:7px;height:7px;border-radius:50%}
+.d-ok{background:var(--ok)}.d-warn{background:#C99A2E}.d-info{background:var(--info)}
+.dp-ok{color:var(--ok)}.dp-warn{color:var(--warn)}.dp-info{color:var(--info)}
+.sku{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--mut);letter-spacing:.02em}
+.uslab{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:600;margin-bottom:6px}
+.etchip{font-size:11.5px;font-weight:700;color:var(--blue-d);background:var(--blue-t);padding:4px 11px;border-radius:999px;white-space:nowrap}
+
+/* ================= PAINÉIS / LAYOUT ================= */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(16,27,60,.04),0 4px 16px rgba(16,27,60,.05)}
+.p-pad{padding:22px 24px}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 30px 70px}
+.crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-bottom:12px;flex-wrap:wrap}
+.crumb a{color:var(--mut)}
+.crumb a:hover{color:var(--blue);text-decoration:underline}
+.crumb .cur{color:var(--ink);font-weight:600}
+.cr-sep{width:13px;height:13px;color:var(--line2)}
+.page-h{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:2px 0 18px;flex-wrap:wrap}
+.page-h h1{font-size:25px;font-weight:700}
+.page-h .sub{color:var(--mut);font-size:14px;margin-top:5px;max-width:640px}
+.page-h .acts{display:flex;gap:10px;flex-wrap:wrap}
+.story{display:flex;gap:10px;align-items:flex-start;background:color-mix(in srgb,var(--blue) 7%,white);border:1px solid var(--lav-l);border-radius:10px;padding:11px 14px;font-size:13px;color:#33406B;margin:0 0 20px;line-height:1.5}
+.story svg{width:15px;height:15px;color:var(--blue);margin-top:2px}
+.sep{border:none;border-top:1px solid var(--line);margin:20px 0}
+.note{display:flex;gap:10px;align-items:flex-start;background:#F7F9FD;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;color:#44506E;line-height:1.5}
+.note svg{width:16px;height:16px;color:var(--blue);margin-top:2px}
+.note.warnn{background:var(--warn-t);border-color:#EBDDB0}
+.note.warnn svg{color:var(--warn)}
+
+/* ================= TABELAS ================= */
+.tblwrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:640px}
+.tbl th{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);text-align:left;padding:11px 16px;border-bottom:1px solid var(--line);font-weight:500;white-space:nowrap;position:sticky;top:0;background:#fff}
+.tbl td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:14px}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr.rowc{cursor:pointer;transition:background .12s}
+.tbl tbody tr.rowc:hover{background:#F7F9FD}
+.tbl .num{font-family:'IBM Plex Mono',monospace;font-size:13px}
+.tbl .rgt{text-align:right}
+
+/* ================= SHELL DO APP ================= */
+.shell{display:grid;grid-template-columns:252px 1fr;min-height:calc(100vh - 30px)}
+.sb{background:var(--navy);color:#B4C1E4;display:flex;flex-direction:column;position:sticky;top:42px;height:calc(100vh - 54px);margin:12px 0 12px 12px;border-radius:18px;overflow:hidden}
+.sb-logo{display:flex;align-items:center;gap:11px;padding:18px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-logo .nm{font-family:'Sora',sans-serif;font-weight:700;font-size:16.5px;color:#fff;letter-spacing:.02em}
+.sb-logo .nm small{display:block;font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:8.5px;letter-spacing:.16em;color:#7C8DBE;margin-top:2px}
+.nav{padding:12px;display:flex;flex-direction:column;gap:2px;flex:1;overflow-y:auto}
+.nav-lb{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:#68799F;padding:12px 10px 6px}
+.nav-i{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;font-size:14px;font-weight:500;color:#B4C1E4;cursor:pointer;position:relative;transition:background .14s,color .14s;border:none;background:none;width:100%;text-align:left}
+.nav-i svg{width:17px;height:17px;opacity:.85}
+.nav-i:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav-i.on{background:rgba(255,255,255,.12);color:#fff;font-weight:600}
+.nav-i.on::before{content:'';position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--blue-l)}
+.nav-i .nbdg{margin-left:auto;background:var(--blue);color:#fff;font-size:10.5px;font-weight:700;min-width:19px;height:19px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px}
+.nav-i .next{margin-left:auto;width:14px;height:14px;opacity:.55}
+.sb-ft{border-top:1px solid rgba(255,255,255,.08);padding:12px}
+.sb-cred{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#68799F;padding:2px 11px 10px}
+.ubox{display:flex;align-items:center;gap:10px;padding:10px 11px;background:rgba(255,255,255,.06);border-radius:10px;cursor:pointer;transition:background .14s}
+.ubox:hover{background:rgba(255,255,255,.1)}
+.avat{width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;font-family:'Sora',sans-serif;flex-shrink:0}
+.ubox .un{font-size:13px;font-weight:600;color:#fff;line-height:1.25}
+.ubox .ur{font-size:11px;color:#8B9BC7}
+.ubox>svg{margin-left:auto;width:15px;height:15px;color:#8B9BC7}
+#umenu{position:relative}
+#umenu .um-inner{position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--navy2);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:6px;z-index:50;box-shadow:0 -8px 30px rgba(0,0,0,.35)}
+.main{min-width:0}
+.topbar{position:sticky;top:30px;z-index:30;background:rgba(243,245,250,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:13px;padding:0 22px;height:60px}
+.tb-search{position:relative;width:min(300px,30vw)}
+.tb-search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--soft)}
+.tb-search input{width:100%;padding:8px 12px 8px 34px;border:1px solid var(--line2);border-radius:10px;background:#fff;outline:none;font-size:13.5px}
+.tb-search input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.tb-title{font-family:'Sora',sans-serif;font-weight:600;font-size:14.5px}
+.tb-title small{display:block;font-family:'Archivo',sans-serif;font-weight:400;font-size:11.5px;color:var(--mut);margin-top:-1px}
+.tb-sp{flex:1}
+.icobtn{position:relative;width:38px;height:38px;border-radius:10px;border:1px solid var(--line2);background:#fff;display:flex;align-items:center;justify-content:center;color:#44506E;transition:all .15s}
+.icobtn:hover{border-color:var(--blue);color:var(--blue)}
+.icobtn svg{width:17px;height:17px}
+.icobtn .nd{position:absolute;top:-4px;right:-4px;background:var(--blue);color:#fff;font-size:9.5px;font-weight:700;min-width:16px;height:16px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--ice)}
+#hamb{display:none}
+.nav-ovl{display:none}
+.bnav{display:none}
+
+/* ================= TELAS PÚBLICAS ================= */
+.pub-head{display:flex;align-items:center;justify-content:space-between;padding:16px 34px;max-width:1280px;margin:0 auto;width:100%;flex-wrap:wrap;gap:10px}
+.brand{display:flex;align-items:center;gap:11px}
+.brand .nm{font-family:'Sora',sans-serif;font-weight:700;font-size:17px;color:var(--navy)}
+.brand .nm small{display:block;font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:8.5px;letter-spacing:.15em;color:var(--soft);margin-top:1px}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:52px;max-width:1180px;margin:0 auto;padding:44px 34px 60px;align-items:start}
+.kick{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);font-weight:600;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.kick::before{content:'';width:26px;height:2px;background:var(--blue)}
+.hero h1{font-size:clamp(30px,3.5vw,44px);font-weight:800;letter-spacing:-.02em;color:var(--navy)}
+.hero h1 em{font-style:normal;color:var(--blue)}
+.hero .lead{margin:16px 0 24px;font-size:16px;color:#44506E;max-width:530px}
+.feat{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.feat .fi{display:flex;gap:13px;align-items:flex-start}
+.feat .fic{width:36px;height:36px;border-radius:10px;border:1px solid var(--line2);background:#fff;display:flex;align-items:center;justify-content:center;color:var(--blue);flex-shrink:0}
+.feat .fic svg{width:17px;height:17px}
+.feat b{font-size:14.5px;display:block}
+.feat span{font-size:13px;color:var(--mut)}
+.hero-foot{display:flex;gap:18px;align-items:center;font-size:13px;color:var(--mut);flex-wrap:wrap}
+.hero-foot a{font-weight:600;color:var(--blue);border-bottom:1px solid transparent}
+.hero-foot a:hover{border-color:var(--blue)}
+.heropanel{background:var(--navy);border-radius:20px;padding:24px;color:#C7D2EC;box-shadow:0 20px 50px -18px rgba(9,22,52,.5)}
+.heropanel .hp-t{font-family:'Sora',sans-serif;font-weight:600;font-size:17px;color:#fff;margin-bottom:4px}
+.heropanel .hp-s{font-size:13px;color:#8B9BC7;margin-bottom:16px}
+.pcard{display:flex;gap:15px;align-items:flex-start;padding:16px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:rgba(255,255,255,.05);cursor:pointer;transition:all .18s;width:100%;text-align:left;color:inherit;margin-bottom:12px}
+.pcard:hover{border-color:var(--blue-l);background:rgba(255,255,255,.09);transform:translateY(-2px)}
+.pcard .pic{width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:#A9C3F5;flex-shrink:0}
+.pcard .pic svg{width:20px;height:20px}
+.pcard b{font-family:'Sora',sans-serif;font-size:15px;color:#fff;display:block;margin-bottom:3px}
+.pcard span{font-size:13px;color:#8B9BC7;line-height:1.45;display:block}
+.pcard .go{margin-left:auto;color:#7C8DBE;align-self:center;width:18px;height:18px}
+.pcard:hover .go{color:var(--blue-l)}
+.flowline{margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;color:#8B9BC7;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flowline svg{width:12px;height:12px;color:var(--blue-l)}
+.hp-login{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.hp-login span{font-size:12.5px;color:#8B9BC7}
+
+.pick-wrap{max-width:880px;margin:0 auto;padding:50px 30px 80px}
+.back{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--mut);margin-bottom:24px;font-weight:500}
+.back:hover{color:var(--blue)}
+.back svg{width:15px;height:15px}
+.pick-wrap h1,.pick-h1{font-size:clamp(25px,3vw,33px);font-weight:700;text-align:center;letter-spacing:-.02em;color:var(--navy)}
+.psub{text-align:center;color:var(--mut);margin:10px auto 34px;max-width:500px}
+.pickgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:28px}
+.pickc{background:#fff;border:1.5px solid var(--line2);border-radius:16px;padding:26px;cursor:pointer;transition:all .18s;text-align:left;position:relative;display:block;width:100%}
+.pickc:hover{transform:translateY(-3px);box-shadow:0 14px 30px -14px rgba(16,27,60,.28);border-color:var(--blue)}
+.pickc.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.14)}
+.pickc .rad{position:absolute;top:20px;right:20px;width:20px;height:20px;border-radius:50%;border:2px solid var(--line2)}
+.pickc.sel .rad{border-color:var(--blue);background:radial-gradient(circle,var(--blue) 42%,#fff 46%)}
+.pickc .pic{width:48px;height:48px;border-radius:13px;background:var(--navy);color:#A9C3F5;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.pickc .pic svg{width:22px;height:22px}
+.pickc b{font-family:'Sora',sans-serif;font-size:17px;display:block;margin-bottom:7px;color:var(--navy)}
+.pickc p{font-size:13.5px;color:var(--mut);margin-bottom:16px;min-height:42px}
+.pickc .pl{font-size:13px;font-weight:700;color:var(--blue);display:inline-flex;align-items:center;gap:7px}
+.pickc .pl svg{width:15px;height:15px}
+.center{text-align:center}
+
+/* ================= AUTH (tabs 100% CSS) ================= */
+.auth-wrap{max-width:470px;margin:0 auto;padding:40px 24px 90px}
+.auth-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 2px rgba(16,27,60,.04),0 8px 24px rgba(16,27,60,.07);overflow:hidden}
+.auth-top{padding:22px 26px 0}
+.auth-tabs{display:flex;border-bottom:1px solid var(--line);margin-top:14px}
+.auth-tabs label{flex:1;text-align:center;padding:12px;font-size:14px;font-weight:600;color:var(--mut);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;transition:all .15s}
+#at-login:checked~.auth-tabs label[for="at-login"],
+#at-signup:checked~.auth-tabs label[for="at-signup"]{color:var(--blue);border-color:var(--blue)}
+.tpanel{display:none;padding:22px 26px 26px}
+#at-login:checked~.tp-login,#at-signup:checked~.tp-signup{display:block}
+.auth-hrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.auth-hrow h2{font-size:20px;color:var(--navy)}
+.pchip{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;background:var(--blue-t);color:var(--blue-d);padding:5px 12px;border-radius:999px;margin-bottom:12px}
+.pchip svg{width:13px;height:13px}
+.demobtn{width:100%;border:1.5px dashed #B9C8EA;background:#F6F8FD;border-radius:11px;padding:13px;display:flex;align-items:center;gap:12px;text-align:left;transition:all .15s;color:inherit}
+.demobtn:hover{border-color:var(--blue);background:var(--blue-t)}
+.demobtn svg{width:18px;height:18px;color:var(--blue);flex-shrink:0}
+.demobtn b{font-size:13.5px;display:block}
+.demobtn span{font-size:12px;color:var(--mut)}
+.divisor{display:flex;align-items:center;gap:12px;color:var(--soft);font-size:12px;margin:18px 0}
+.divisor::before,.divisor::after{content:'';flex:1;height:1px;background:var(--line)}
+.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.catcard{border:1.5px solid var(--line2);border-radius:12px;padding:18px 16px;cursor:pointer;display:block;transition:all .15s;background:#fff;text-align:left;width:100%}
+.catcard:hover{border-color:var(--blue)}
+.catcard b{font-family:'Sora',sans-serif;font-size:15px;display:block;margin-bottom:4px;color:var(--navy)}
+.catcard span{font-size:12.5px;color:var(--mut);line-height:1.45;display:block}
+
+/* ================= DASHBOARD INTERNO ================= */
+.dash-hi{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.dash-hi h1{font-size:24px;color:var(--navy)}
+.dash-hi .dt{font-size:13px;color:var(--mut);margin-top:4px}
+.kstrip{display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(16,27,60,.04),0 4px 16px rgba(16,27,60,.05);overflow:hidden;margin-bottom:22px}
+.kpi{padding:18px 20px;border-left:1px solid var(--line);cursor:pointer;transition:background .14s;background:none;border-top:none;border-right:none;border-bottom:none;text-align:left}
+.kpi:first-child{border-left:none}
+.kpi:hover{background:#F7F9FD}
+.kpi .kv{font-family:'Sora',sans-serif;font-size:27px;font-weight:700;letter-spacing:-.02em;color:var(--navy)}
+.kpi .kl{font-size:12px;color:var(--mut);margin-top:3px;line-height:1.35}
+.dashgrid{display:grid;grid-template-columns:1.25fr .75fr;gap:22px;align-items:start}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px}
+.ph h3{font-size:15.5px}
+.ph a{font-size:13px;font-weight:600;color:var(--blue);background:none;border:none;padding:0}
+.ph a:hover{text-decoration:underline}
+.qact{display:flex;gap:13px;align-items:center;background:var(--navy);color:#fff;border-radius:14px;padding:16px 20px;margin-bottom:22px;cursor:pointer;transition:transform .16s;flex-wrap:wrap;width:100%;text-align:left;border:none}
+.qact:hover{transform:translateY(-2px)}
+.qact .qa-ic{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qact .qa-ic svg{width:19px;height:19px;color:#A9C3F5}
+.qact b{display:block;font-size:14.5px}
+.qact span{font-size:12.5px;color:#9FB0D9}
+.qact .btn{margin-left:auto}
+.qlist{display:flex;flex-direction:column}
+.qitem{display:flex;gap:13px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.qitem:last-child{border-bottom:none}
+.qitem:hover b{color:var(--blue)}
+.qic{width:32px;height:32px;border-radius:9px;background:#EDF1F9;display:flex;align-items:center;justify-content:center;color:#44506E;flex-shrink:0}
+.qic svg{width:15px;height:15px}
+.qitem b{font-size:13.5px;display:block}
+.qitem span{font-size:12px;color:var(--mut);line-height:1.45}
+.qitem .w{margin-left:auto;font-size:11.5px;color:var(--soft);white-space:nowrap}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.quick button{display:flex;align-items:center;gap:12px;padding:12px;background:none;border:none;border-radius:9px;font-size:14px;font-weight:600;color:var(--ink);text-align:left;transition:background .14s;width:100%}
+.quick button:hover{background:#EDF1F9}
+.quick button svg{width:17px;height:17px;color:var(--blue)}
+.quick button .cnt{margin-left:auto;font-size:11.5px;background:#EDF0F7;color:var(--mut);padding:2px 8px;border-radius:99px}
+
+/* ================= CATÁLOGO EM CARDS ================= */
+.toolbar{display:flex;gap:11px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.search{position:relative;flex:1;min-width:220px}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--soft)}
+.search input{width:100%;padding:10px 12px 10px 38px;border:1px solid var(--line2);border-radius:10px;background:#fff;outline:none}
+.search input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:7px 14px;border-radius:999px;border:1px solid var(--line2);background:#fff;font-size:13px;font-weight:600;color:#44506E;transition:all .14s;cursor:pointer;position:relative;display:inline-flex}
+.chip:hover{border-color:var(--blue)}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip:has(input:checked){background:var(--navy);border-color:var(--navy);color:#fff}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:16px}
+.pcard3{background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 11px 13px;display:flex;flex-direction:column;gap:7px;transition:box-shadow .16s,border-color .16s,transform .16s}
+.pcard3:hover{border-color:var(--blue);box-shadow:0 10px 26px -12px rgba(16,27,60,.3);transform:translateY(-2px)}
+.pcard3-img{width:100%;aspect-ratio:1/1;border-radius:11px;overflow:hidden;background:#F1F4FA;border:none;padding:0;cursor:pointer}
+.pcard3-img img{width:100%;height:100%;object-fit:cover;transition:transform .25s ease}
+.pcard3:hover .pcard3-img img{transform:scale(1.04)}
+.pcard3-cat{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);display:flex;align-items:center;gap:5px}
+.pcard3-cat svg{width:12px;height:12px}
+.pcard3-nm{font-weight:600;font-size:14px;line-height:1.35;color:var(--navy);cursor:pointer;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:38px}
+.pcard3-nm:hover{color:var(--blue)}
+.pcard3-meta{font-size:12px;color:var(--mut)}
+.pcard3 .disp{font-size:12px}
+.pcard3 .btn{margin-top:2px}
+.empty{padding:56px 24px;text-align:center;color:var(--mut)}
+.empty .eic{width:58px;height:58px;border-radius:15px;background:#EDF1F9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:#8A94AE}
+.empty .eic svg{width:26px;height:26px}
+.empty b{font-family:'Sora',sans-serif;font-size:16px;color:var(--ink);display:block;margin-bottom:6px}
+.catzone:has(#cc-fixacao:checked) .pcard3:not(.cat-fixacao){display:none}
+.catzone:has(#cc-eletrica:checked) .pcard3:not(.cat-eletrica){display:none}
+.catzone:has(#cc-epi:checked) .pcard3:not(.cat-epi){display:none}
+.catzone:has(#cc-ferramentas:checked) .pcard3:not(.cat-ferramentas){display:none}
+.catzone:has(#cc-embalagens:checked) .pcard3:not(.cat-embalagens){display:none}
+.catzone:has(#cc-hidraulica:checked) .pcard3:not(.cat-hidraulica){display:none}
+.catzone:has(#cc-limpeza:checked) .pcard3:not(.cat-limpeza){display:none}
+
+/* seletor de fornecedor (apenas no modal do produto) */
+.supsel{display:grid;gap:10px}
+.supsel label{display:flex;gap:11px;align-items:center;border:1.5px solid var(--line2);border-radius:11px;padding:11px 13px;cursor:pointer;transition:all .15s;position:relative}
+.supsel input{position:absolute;opacity:0;pointer-events:none}
+.supsel label:has(input:checked){border-color:var(--blue);background:var(--blue-t);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.supsel .sav{width:34px;height:34px;border-radius:9px;background:var(--navy);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;flex-shrink:0}
+.supsel b{display:block;font-size:13.5px;color:var(--navy)}
+.supsel small{font-size:12px;color:var(--mut)}
+
+/* ================= CARRINHO / MODAL PRODUTO ================= */
+.cartgrid{display:grid;grid-template-columns:1.5fr .8fr;gap:22px;align-items:start}
+.sticky-side{position:sticky;top:104px}
+.crow{display:grid;grid-template-columns:56px 1fr auto auto;gap:14px;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line)}
+.crow:last-child{border-bottom:none}
+.stepper{display:flex;align-items:center;border:1px solid var(--line2);border-radius:9px;overflow:hidden;background:#fff}
+.stepper button{width:32px;height:36px;border:none;background:#F1F4FA;font-size:16px;color:#44506E;display:flex;align-items:center;justify-content:center}
+.stepper button:hover{background:#E4EAF5;color:var(--blue)}
+.stepper input{width:58px;height:36px;border:none;outline:none;text-align:center;font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:13.5px}
+.sumrow{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:7px 0;color:#44506E}
+.sumrow b{font-variant-numeric:tabular-nums;text-align:right}
+.pm-grid{display:grid;grid-template-columns:190px 1fr;gap:20px}
+.pm-grid img{width:100%;border-radius:11px;border:1px solid var(--line);aspect-ratio:1;object-fit:cover;background:#EDF1F9}
+.defg{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13.5px}
+.defg dt{color:var(--soft);font-weight:500}
+.defg dd{font-weight:500}
+
+/* ================= CONFIRMAÇÃO / TIMELINE ================= */
+.done-wrap{max-width:640px;margin:24px auto 0}
+.done-ic{width:62px;height:62px;border-radius:50%;background:var(--ok-t);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.done-ic svg{width:30px;height:30px}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;margin:18px 0}
+.meta-grid .mg{background:#F7F9FD;border:1px solid var(--line);border-radius:11px;padding:12px 15px}
+.meta-grid .mg small{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:4px}
+.meta-grid .mg b{font-size:14px;color:var(--navy)}
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line2)}
+.tl-i{position:relative;padding-bottom:20px}
+.tl-i:last-child{padding-bottom:0}
+.tl-i::before{content:'';position:absolute;left:-25px;top:5px;width:12px;height:12px;border-radius:50%;background:#fff;border:2.5px solid var(--line2)}
+.tl-i.done::before{background:var(--navy);border-color:var(--navy)}
+.tl-i.cur::before{background:var(--blue);border-color:var(--blue);box-shadow:0 0 0 4px rgba(37,99,235,.16)}
+.tl-i b{font-size:14.5px;display:block;color:var(--navy)}
+.tl-i span{font-size:13px;color:var(--mut)}
+
+/* ================= COMPARAÇÃO ================= */
+.cmp-sup{display:flex;align-items:flex-start;gap:10px}
+.cmp-sup .sav{width:34px;height:34px;border-radius:10px;background:var(--navy);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;flex-shrink:0}
+.cmp-sup b{font-size:13px;line-height:1.25;display:block;color:var(--navy)}
+.cmp-sup span{font-size:11px;color:var(--mut);display:block}
+.cmp-cell .pu{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;color:var(--navy)}
+.cmp-cell .ex{font-size:12px;color:var(--mut);margin-top:4px;line-height:1.5}
+.cmp-cell .nt{font-size:11.5px;color:var(--soft);font-style:italic;margin-top:4px}
+.cmp-na{font-size:12.5px;color:var(--soft);display:flex;gap:7px;align-items:center}
+.cmp-na svg{width:14px;height:14px}
+.cmp-na.na-err{color:var(--err)}
+.cmp-total{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:16px;color:var(--blue-d)}
+
+/* ================= E-MAIL (PRÉVIA) ================= */
+.mail{border-radius:13px;overflow:hidden;border:1px solid var(--line);text-align:left}
+.mail-h{background:#F3F5FA;padding:15px 20px;border-bottom:1px solid var(--line)}
+.mail-h .mr{display:flex;gap:8px;font-size:13px;margin-bottom:5px}
+.mail-h .mr small{font-family:'IBM Plex Mono',monospace;color:var(--soft);width:60px;flex-shrink:0;font-size:11px;padding-top:1px}
+.mail-b{padding:20px 24px;background:#fff;font-size:14px}
+.mail-b table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+.mail-b th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);border-bottom:1px solid var(--line);padding:8px 10px;font-weight:500}
+.mail-b td{padding:9px 10px;border-bottom:1px solid #F1F4FA}
+
+/* ================= RESPONDER COTAÇÃO ================= */
+.ritem{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:12px;background:#fff}
+.ritem.off{background:#F7F9FD}
+.rhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.rhead b{font-size:14.5px;color:var(--navy)}
+.rq{margin-left:auto;font-size:13px;color:var(--mut);background:#EDF1F9;padding:4px 11px;border-radius:8px;white-space:nowrap}
+.rfields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px;margin-top:14px}
+.sw{position:relative;width:42px;height:23px;border-radius:99px;background:#C9D2E6;cursor:pointer;transition:background .18s;flex-shrink:0;display:inline-block}
+.sw::after{content:'';position:absolute;top:2.5px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .18s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sw.on{background:var(--ok)}
+.sw.on::after{left:21px}
+.swrow{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;cursor:pointer;user-select:none}
+.rejbox{border:1px dashed #EFC5C5;background:#FDF7F7;border-radius:12px;padding:16px 18px;margin-top:16px}
+
+/* ================= DIALOG (modais nativos) ================= */
+dialog.mbox{margin:auto;border:none;padding:0;border-radius:16px;max-width:520px;width:calc(100vw - 44px);box-shadow:0 30px 70px -20px rgba(9,22,52,.5)}
+dialog.mbox.wide{max-width:700px}
+dialog.mbox::backdrop{background:rgba(9,17,40,.55);backdrop-filter:blur(2px)}
+dialog.mbox[open]{animation:min .2s ease}
+dialog.mbox.fallback{position:fixed;inset:0;margin:auto;align-self:center}
+@keyframes min{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.m-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:19px 22px 0}
+.m-head h3{font-size:17px;color:var(--navy)}
+.m-x{width:32px;height:32px;border-radius:9px;border:none;background:#EDF1F9;color:#44506E;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.m-x:hover{background:#E4EAF5}
+.m-x svg{width:16px;height:16px}
+.m-body{padding:16px 22px 22px}
+.m-foot{display:flex;justify-content:flex-end;gap:10px;padding:0 22px 22px;flex-wrap:wrap}
+
+/* ================= TOAST / LOADER ================= */
+#toast-root{position:fixed;bottom:22px;right:22px;z-index:400;display:flex;flex-direction:column;gap:10px;max-width:min(380px,calc(100vw - 44px))}
+.toast{display:flex;align-items:flex-start;gap:11px;background:var(--navy2);color:#E7ECF9;padding:13px 18px;border-radius:12px;font-size:13.5px;font-weight:500;box-shadow:0 10px 30px -8px rgba(9,22,52,.55);animation:tin .28s ease;line-height:1.45}
+.toast svg{width:17px;height:17px;flex-shrink:0;margin-top:1px}
+.toast.ok svg{color:#5FD08F}
+.toast.warn svg{color:#EBC26A}
+.toast.err svg{color:#EF8E8E}
+.toast.out{opacity:0;transition:opacity .3s}
+@keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.load-ovl{position:fixed;inset:0;background:rgba(243,245,250,.85);backdrop-filter:blur(3px);z-index:380;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.spin{width:38px;height:38px;border-radius:50%;border:3px solid var(--line2);border-top-color:var(--blue);animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.load-t{font-size:14px;color:#44506E;font-weight:500}
+
+/* ================= ROADMAP ================= */
+.rm{position:relative;padding-left:36px;max-width:660px}
+.rm::before{content:'';position:absolute;left:11px;top:8px;bottom:8px;width:2px;background:var(--line2)}
+.rmstep{position:relative;padding-bottom:30px}
+.rmstep:last-child{padding-bottom:0}
+.rmdot{position:absolute;left:-36px;top:2px;width:24px;height:24px;border-radius:50%;background:#fff;border:2.5px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--soft);font-family:'Sora',sans-serif}
+.rmstep.cur .rmdot{background:var(--blue);border-color:var(--blue);color:#fff}
+.rmstep h3{font-size:16.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--navy)}
+.rmstep p{font-size:13.5px;color:var(--mut);margin:6px 0 10px}
+.rmlist{display:flex;gap:8px;flex-wrap:wrap}
+.rmlist span{font-size:12.5px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 11px;color:#44506E}
+details.qacc{border:1px solid var(--line);border-radius:12px;background:#fff;max-width:660px}
+details.qacc summary{cursor:pointer;padding:14px 18px;font-weight:600;font-size:14px;color:var(--mut);list-style:none;display:flex;align-items:center;gap:9px}
+details.qacc summary::-webkit-details-marker{display:none}
+details.qacc summary::after{content:'+';margin-left:auto;font-family:'IBM Plex Mono',monospace;color:var(--soft);font-size:16px}
+details.qacc[open] summary{color:var(--blue)}
+details.qacc[open] summary::after{content:'–'}
+details.qacc .opendefs{padding:2px 18px 16px}
+.opendefs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.opendefs span{font-size:12.5px;background:var(--warn-t);border:1px dashed #E3CD96;border-radius:8px;padding:5px 11px;color:var(--warn)}
+
+/* ================= FOOTER PÚBLICO ================= */
+.pubfoot{border-top:1px solid var(--line);padding:20px 34px;text-align:center;font-size:12.5px;color:var(--soft)}
+.pubfoot b{color:#44506E}
+
+/* ================= RESPONSIVO ================= */
+@media(max-width:1020px){
+  .kstrip{grid-template-columns:repeat(3,1fr)}
+  .kpi{border-top:1px solid var(--line)}
+  .kpi:nth-child(-n+3){border-top:none}
+  .kpi:nth-child(4){border-left:none}
+  .dashgrid,.cartgrid{grid-template-columns:1fr}
+  .hero{grid-template-columns:1fr;gap:36px}
+  .pgrid{grid-template-columns:repeat(auto-fill,minmax(178px,1fr))}
+}
+@media(max-width:920px){
+  body.inapp{padding-bottom:86px}
+  .shell{grid-template-columns:1fr}
+  .sb{position:fixed;left:10px;top:42px;bottom:10px;width:264px;height:auto;z-index:80;margin:0;transform:translateX(-115%);transition:transform .25s ease;box-shadow:0 0 0 0 transparent}
+  body.nav-open .sb{transform:none;box-shadow:20px 0 60px rgba(9,22,52,.35)}
+  body.nav-open .nav-ovl{display:block;position:fixed;inset:0;top:30px;background:rgba(9,17,40,.45);z-index:70}
+  #hamb{display:flex}
+  .tb-search{display:none}
+  .wrap{padding:22px 18px 60px}
+  .pub-head{padding:14px 18px}
+  .pickgrid,.catgrid,.grid2,.grid3,.rfields,.meta-grid{grid-template-columns:1fr}
+  .kstrip{grid-template-columns:1fr 1fr}
+  .pm-grid{grid-template-columns:1fr}
+  .crow{grid-template-columns:50px 1fr auto}
+  .crow .btn-d{grid-column:2}
+  .pgrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .bnav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px));gap:2px}
+  .bnav button{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--soft);padding:4px 2px;border-radius:8px}
+  .bnav button svg{width:19px;height:19px}
+  .bnav button.on{color:var(--blue)}
+}
+</style>
+</head>
+<body>
+
+<div class="strip"><span class="dot"></span><span><b>Protótipo navegável</b> — ambiente de demonstração · todos os dados são simulados · nenhuma informação real é enviada</span></div>
+
+<div id="app">
+  <div class="boot">
+    <div class="boot-brand"><span class="logo-sq" style="width:40px;height:40px;font-size:21px">d</span>dushell</div>
+    <div class="boot-sub">Carregando protótipo…</div>
+    <div id="boot-msg" class="boot-msg" style="display:none"></div>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+<div id="load-root"></div>
+
+<!-- Módulo externo de validação fiscal: deve ficar na mesma pasta do HTML -->
+<script src="dushell-validacao.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+'use strict';
+/* ================================================================
+   DUSHELL — PROTÓTIPO NAVEGÁVEL v0.3.3 · Azul-Marinho & Branco-Gelo
+   Novidade desta versão: integração completa com o Dashboard
+   Analítico (dashboard.html + dashboard.js):
+     • Sessão compartilhada via localStorage ('dushell_sessao')
+     • Rotas geradas por dashURL(): perfil do usuário ativo
+     • Retorno da dashboard: index.html?retomar=1[&go=...]
+     • Sem abas dentro da dashboard — o perfil NUNCA é trocado lá
+   ================================================================ */
+
+/* ---------- utilitários ---------- */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s===undefined||s===null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function money(v){ return Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+function fmtN(v){ return Number(v).toLocaleString('pt-BR'); }
+function pad2(n){ return ('0'+n).slice(-2); }
+function fmtDT(d){ return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad2(d.getHours())+':'+pad2(d.getMinutes()); }
+function nowDT(){ return fmtDT(new Date()); }
+function todayBR(){ var d=new Date(); return pad2(d.getDate())+'/'+pad2(d.getMonth()+1)+'/'+d.getFullYear(); }
+function slug(s){ return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-'); }
+function refreshIcons(){ try{ if(window.lucide && lucide.createIcons){ lucide.createIcons(); } }catch(e){} }
+function countdownInfo(){
+  var now=new Date(); var t=new Date(now); t.setHours(18,30,0,0);
+  if(t<=now){ t.setDate(t.getDate()+1); }
+  var diff=t-now;
+  var h=Math.floor(diff/3600000), m=Math.floor((diff%3600000)/60000);
+  return { rest: h+'h '+pad2(m)+'min', when: fmtDT(t) };
+}
+
+/* ---------- dados mock ---------- */
+var BUYER_COMPANY='Comercial Silva Ltda.', BUYER_SHORT='Comercial Silva', DEMO_SUP='sup-horiz';
+var SUPPLIERS={
+  'sup-horiz':{name:'Cavalo de Ferro Metalúrgica Ltda.',short:'Cavalo de Ferro',ini:'CF',city:'Campinas/SP',cats:['Fixação','Ferramentas']},
+  'sup-forte':{name:'Alunizando o Mundo Fixadores Ltda.',short:'Alunizando o Mundo',ini:'AM',city:'Jundiaí/SP',cats:['Fixação']},
+  'sup-eletro':{name:'EletroSul Componentes Ltda.',short:'EletroSul',ini:'ES',city:'Curitiba/PR',cats:['Elétrica']},
+  'sup-safe':{name:'SafeGuard EPI Distribuidora',short:'SafeGuard',ini:'SG',city:'São Paulo/SP',cats:['EPI','Limpeza']},
+  'sup-pack':{name:'PackMax Embalagens Ltda.',short:'PackMax',ini:'PX',city:'Ribeirão Preto/SP',cats:['Embalagens']},
+  'sup-hidro':{name:'HidroVale Conexões Ltda.',short:'HidroVale',ini:'HV',city:'Betim/MG',cats:['Hidráulica']}
+};
+var CATS=['Fixação','Elétrica','EPI','Ferramentas','Embalagens','Hidráulica','Limpeza'];
+var CATICON={'Fixação':'wrench','Elétrica':'zap','EPI':'hard-hat','Ferramentas':'hammer','Embalagens':'package','Hidráulica':'droplets','Limpeza':'spray-can'};
+var UNITS=['UN','CX','PC','KG','MT','RL','FD','PAR'];
+var PRODUCTS=[
+  {sku:'PAR-M8-001',name:'Parafuso Sextavado M8×40 Zincado',cat:'Fixação',unit:'CX (100 un.)',brand:'FixPro',avail:'Disponível',desc:'Parafuso sextavado DIN 933, rosca métrica M8, zincado a fogo. Embalagem com 100 unidades.',sup:['sup-horiz','sup-forte']},
+  {sku:'PAR-M8-060',name:'Parafuso Sextavado M8×60 Zincado',cat:'Fixação',unit:'CX (100 un.)',brand:'FixPro',avail:'Disponível',desc:'Parafuso sextavado DIN 933 M8, comprimento 60 mm, zincado. Embalagem com 100 unidades.',sup:['sup-horiz','sup-forte']},
+  {sku:'PAR-12-014',name:'Parafuso Rosca Furadeira 12×25',cat:'Fixação',unit:'CX (200 un.)',brand:'FixPro',avail:'Disponível',desc:'Parafuso autoperfurante ponta broca, cabeça sextavada com arruela vulcanizada. Caixa com 200 unidades.',sup:['sup-horiz','sup-forte']},
+  {sku:'ARR-8-001',name:'Arruela Lisa 8 mm Galvanizada',cat:'Fixação',unit:'CX (500 un.)',brand:'FixPro',avail:'Disponível',desc:'Arruela lisa galvanizada para parafusos M8. Caixa com 500 unidades.',sup:['sup-horiz']},
+  {sku:'POR-8-001',name:'Porca Sextavada 8 mm Galvanizada',cat:'Fixação',unit:'CX (500 un.)',brand:'FixPro',avail:'Disponível',desc:'Porca sextavada galvanizada, rosca métrica M8. Caixa com 500 unidades.',sup:['sup-horiz']},
+  {sku:'ELT-CF-250',name:'Cabo Flexível 2,5 mm² — Rolo 100 m',cat:'Elétrica',unit:'RL (100 m)',brand:'Amper',avail:'Disponível',desc:'Cabo flexível 750 V, 2,5 mm², rolo com 100 metros. Cores conforme disponibilidade.',sup:['sup-eletro']},
+  {sku:'ELT-DJ-025',name:'Disjuntor DIN 25 A Curva C',cat:'Elétrica',unit:'UN',brand:'Amper',avail:'Sob consulta',desc:'Disjuntor miniatura bipolar, trilho DIN, 25 A, curva C.',sup:['sup-eletro']},
+  {sku:'EPI-LV-NIT',name:'Luva Nitrílica CA 12345',cat:'EPI',unit:'CX (50 pares)',brand:'Protecta',avail:'Disponível',desc:'Luva de segurança nitrílica revestida, Certificado de Aprovação 12345. Caixa com 50 pares.',sup:['sup-safe']},
+  {sku:'EPI-CP-002',name:'Capacete de Segurança Classe B',cat:'EPI',unit:'UN',brand:'Protecta',avail:'Disponível',desc:'Capacete para proteção contra impactos, janela frontal, classe B. Cores sortidas.',sup:['sup-safe']},
+  {sku:'EPI-OC-001',name:'Óculos de Proteção Incolor',cat:'EPI',unit:'UN',brand:'Protecta',avail:'Disponível',desc:'Óculos de segurança ampla visão, lente incolor antirrisco.',sup:['sup-safe']},
+  {sku:'FER-CF-316',name:'Chave de Fenda 3/16 pol.',cat:'Ferramentas',unit:'UN',brand:'Forza',avail:'Disponível',desc:'Chave de fenda ponta chata 3/16 pol. com cabo bi-componente.',sup:['sup-horiz']},
+  {sku:'FER-FD-750',name:'Furadeira de Impacto 750 W',cat:'Ferramentas',unit:'UN',brand:'Forza',avail:'Sob encomenda',desc:'Furadeira de impacto 750 W, mandril de 13 mm, acompanha maleta.',sup:['sup-horiz']},
+  {sku:'EMB-CX-4030',name:'Caixa de Papelão Ondulado 40×30×25',cat:'Embalagens',unit:'FD (25 un.)',brand:'Emballeve',avail:'Disponível',desc:'Caixa de papelão ondulado onda simples. Fardo com 25 unidades.',sup:['sup-pack']},
+  {sku:'EMB-FT-048',name:'Fita Adesiva de Embalagem 48 mm',cat:'Embalagens',unit:'UN',brand:'Emballeve',avail:'Disponível',desc:'Fita adesiva BOPP transparente 48 mm × 100 m.',sup:['sup-pack']},
+  {sku:'HID-TE-025',name:'Tê PVC Soldável 25 mm',cat:'Hidráulica',unit:'PC',brand:'PlastVale',avail:'Disponível',desc:'Conexão tê PVC soldável 25 mm, classe 15.',sup:['sup-hidro']},
+  {sku:'HID-RG-012',name:'Registro Gaveta 1/2 pol. Latão',cat:'Hidráulica',unit:'UN',brand:'PlastVale',avail:'Sob consulta',desc:'Registro de gaveta em latão 1/2 pol., rosca.',sup:['sup-hidro']},
+  {sku:'LIM-DT-5L',name:'Detergente Neutro Galão 5 L',cat:'Limpeza',unit:'UN',brand:'Limpol+',avail:'Disponível',desc:'Detergente neutro concentrado, galão 5 litros.',sup:['sup-safe']},
+  {sku:'LIM-AL-5L',name:'Álcool 70% Galão 5 L',cat:'Limpeza',unit:'UN',brand:'Limpol+',avail:'Sob consulta',desc:'Álcool etílico hidratado 70% para superfícies, galão 5 litros.',sup:['sup-safe']}
+];
+function P(sku){ for(var i=0;i<PRODUCTS.length;i++){ if(PRODUCTS[i].sku===sku) return PRODUCTS[i]; } return {name:sku,cat:'',unit:'UN',brand:'',avail:'Disponível',desc:'',sup:[]}; }
+var QSTATUS={
+  rascunho:{l:'Rascunho',i:'pencil',c:'st-mut'},
+  enviada:{l:'Enviada',i:'send',c:'st-info'},
+  aguardando:{l:'Aguardando resposta',i:'hourglass',c:'st-warn'},
+  parcial:{l:'Parcialmente respondida',i:'hourglass',c:'st-warn'},
+  respondida:{l:'Respondida',i:'check-circle-2',c:'st-ok'},
+  analise:{l:'Em análise',i:'search',c:'st-info'},
+  aprovada:{l:'Aprovada',i:'badge-check',c:'st-mint'},
+  recusada:{l:'Recusada',i:'circle-slash',c:'st-err'},
+  expirada:{l:'Expirada',i:'timer-off',c:'st-err'},
+  cancelada:{l:'Cancelada',i:'x-circle',c:'st-err'}
+};
+var OST={
+  'ag-pag':{l:'Aguardando pagamento',i:'wallet',c:'st-warn'},
+  'pag-pend':{l:'Pagamento pendente',i:'clock',c:'st-warn'},
+  'pag-ok':{l:'Pagamento confirmado',i:'check-circle-2',c:'st-ok'},
+  'env-for':{l:'Pedido enviado ao fornecedor',i:'truck',c:'st-info'},
+  'proc':{l:'Em processamento',i:'settings',c:'st-info'},
+  'enviado':{l:'Enviado',i:'truck',c:'st-info'},
+  'concl':{l:'Concluído',i:'check-circle-2',c:'st-ok'},
+  'cancel':{l:'Cancelado',i:'x-circle',c:'st-err'}
+};
+var AVAILMAP={'Disponível':['d-ok','dp-ok'],'Sob consulta':['d-warn','dp-warn'],'Sob encomenda':['d-info','dp-info']};
+var CONDS={
+  'a-combinar':'A combinar com o comprador (regra a definir)',
+  'ddl28':'Pagamento 28 ddl (regra a definir)',
+  '5050':'50% entrada + 50% na entrega (regra a definir)',
+  'avista':'À vista, desconto a definir (regra a definir)'
+};
+
+/* ---------- estado ---------- */
+var S={
+  screen:'entry',pick:null,authTab:'login',buyType:null,bStep:0,sStep:0,
+  draft:{},user:null,profile:null,cart:[],
+  f:{q:'',cat:'Todas',sup:'Todos',sort:'rel'},qf:'todas',
+  qid:null,sqid:null,resp:null,lastSent:null,lastOrder:null,pq:1,pqs:null,disp:{},
+  prodReqs:[
+    {id:'PR-000031',name:'Mangueira Pneumática 8 mm',date:'06/05/2025',status:'aprovada'},
+    {id:'PR-000028',name:'Parafuso Rosca Frisada 1/2 pol.',date:'28/04/2025',status:'recusada'}
+  ],
+  notifs:{
+    buyer:[
+      {t:'Proposta recebida',d:'Alunizando o Mundo respondeu à cotação COT-000118. Compare as propostas antes de escolher.',w:'há 2 h',ic:'mail-check',unread:true},
+      {t:'Proposta recebida',d:'Cavalo de Ferro respondeu à cotação COT-000118.',w:'ontem, 11:02',ic:'mail-check',unread:true},
+      {t:'Cotação aguardando',d:'A cotação COT-000124 ainda aguarda resposta dos fornecedores.',w:'ontem, 16:40',ic:'hourglass',unread:false},
+      {t:'Pedido em andamento',d:'O pedido PED-000457 está em processamento pelo fornecedor.',w:'09/05',ic:'truck',unread:false}
+    ],
+    supplier:[
+      {t:'Nova cotação recebida',d:'COT-000119 · Construtora Vale Verde — 3 itens direcionados à sua empresa. Responder em até 24h.',w:'hoje, 08:30',ic:'file-text',unread:true},
+      {t:'Proposta aguardando decisão',d:'Sua proposta na cotação COT-000117 aguarda decisão do comprador.',w:'ontem, 09:12',ic:'hourglass',unread:true},
+      {t:'Solicitação de produto aprovada',d:'A solicitação PR-000031 (Mangueira Pneumática 8 mm) foi aprovada pela Dushell.',w:'06/05',ic:'badge-check',unread:false},
+      {t:'Pedido concluído',d:'O pedido PED-000449 foi concluído.',w:'30/04',ic:'check-circle-2',unread:false}
+    ]
+  },
+  quotes:[
+    {id:'COT-000112',date:'24/04/2025 15:20',buyer:'Transportes Rota Sul Ltda.',buyerShort:'Transportes Rota Sul',status:'recusada',obs:'',delivery:'Pátio logístico — Sorocaba/SP',deadline:'24h',
+     items:[{sku:'ELT-CF-250',qty:4}],notified:['sup-horiz'],
+     proposals:[{sup:'sup-horiz',refused:true,reason:'Fora do mix de fornecimento da empresa.',sentAt:'24/04/2025 16:02'}]},
+    {id:'COT-000115',date:'28/04/2025 14:03',buyer:BUYER_COMPANY,buyerShort:BUYER_SHORT,status:'expirada',obs:'',delivery:'Obra Jardim das Palmeiras — Campinas/SP',deadline:'24h',
+     items:[{sku:'HID-TE-025',qty:400},{sku:'HID-RG-012',qty:60}],notified:['sup-hidro'],proposals:[]},
+    {id:'COT-000117',date:'02/05/2025 11:48',buyer:'Mercado Bom Preço Ltda.',buyerShort:'Mercado Bom Preço',status:'respondida',obs:'',delivery:'Centro de Distribuição — Jundiaí/SP',deadline:'24h',
+     items:[{sku:'PAR-M8-001',qty:1000}],notified:['sup-horiz'],
+     proposals:[{sup:'sup-horiz',sentAt:'02/05/2025 12:31',conditions:'Pagamento 28 ddl (regra comercial a definir)',lines:{'PAR-M8-001':{price:0.40,term:6,note:null}}}]},
+    {id:'COT-000118',date:'05/05/2025 09:14',buyer:BUYER_COMPANY,buyerShort:BUYER_SHORT,status:'respondida',obs:'Entregas parciais são aceitáveis, em até 2 lotes.',delivery:'Depósito Central — Rua das Serrarias, 410 — Campinas/SP',deadline:'24h',
+     items:[{sku:'PAR-M8-001',qty:500},{sku:'PAR-12-014',qty:300},{sku:'FER-CF-316',qty:120}],notified:['sup-horiz','sup-forte'],
+     proposals:[
+       {sup:'sup-horiz',sentAt:'05/05/2025 11:02',conditions:'Pagamento 28 ddl (regra comercial a definir)',
+        lines:{'PAR-M8-001':{price:0.42,term:5,note:'Preço válido para o lote completo.'},'PAR-12-014':{price:0.28,term:5,note:null},'FER-CF-316':{price:6.90,term:8,note:null}}},
+       {sup:'sup-forte',sentAt:'05/05/2025 16:40',conditions:'50% na entrada + 50% na entrega (regra a definir)',
+        lines:{'PAR-M8-001':{price:0.39,term:7,note:null},'PAR-12-014':{price:0.31,term:6,note:null},'FER-CF-316':null}}
+     ]},
+    {id:'COT-000121',date:'08/05/2025 10:27',buyer:BUYER_COMPANY,buyerShort:BUYER_SHORT,status:'parcial',obs:'Preferência por entrega única.',delivery:'Loja Centro — Rua XV de Novembro, 1200 — Campinas/SP',deadline:'24h',
+     items:[{sku:'ELT-CF-250',qty:10},{sku:'ELT-DJ-025',qty:80},{sku:'EPI-CP-002',qty:60}],notified:['sup-eletro','sup-safe'],
+     proposals:[
+       {sup:'sup-eletro',sentAt:'08/05/2025 13:05',conditions:'Pagamento 28 ddl (regra a definir)',
+        lines:{'ELT-CF-250':{price:389.90,term:4,note:'Cores sujeitas a confirmação.'},'ELT-DJ-025':{price:27.40,term:4,note:null},'EPI-CP-002':null}}
+     ]},
+    {id:'COT-000124',date:'09/05/2025 16:52',buyer:BUYER_COMPANY,buyerShort:BUYER_SHORT,status:'aguardando',obs:'',delivery:'Depósito Central — Rua das Serrarias, 410 — Campinas/SP',deadline:'24h',
+     items:[{sku:'EPI-LV-NIT',qty:20},{sku:'LIM-AL-5L',qty:10}],notified:['sup-safe'],proposals:[]},
+    {id:'COT-000119',date:'10/05/2025 08:30',buyer:'Construtora Vale Verde S.A.',buyerShort:'Construtora Vale Verde',status:'aguardando',obs:'Conforme projeto estrutural. Entrega única no canteiro.',delivery:'Canteiro Vila Nova — Sorocaba/SP',deadline:'24h',
+     items:[{sku:'PAR-M8-060',qty:800,sup:'sup-horiz'},{sku:'ARR-8-001',qty:1600,sup:'sup-horiz'},{sku:'POR-8-001',qty:800,sup:'sup-horiz'}],notified:['sup-horiz'],proposals:[]}
+  ],
+  orders:[
+    {id:'PED-000449',date:'30/04/2025',quote:'COT-000109',sup:'sup-horiz',buyer:BUYER_COMPANY,buyerShort:BUYER_SHORT,items:[{sku:'PAR-M8-001',qty:200},{sku:'ARR-8-001',qty:400}],total:172.00,status:'concl'},
+    {id:'PED-000452',date:'07/05/2025',quote:'COT-000114',sup:'sup-horiz',buyer:'Construtora Vale Verde S.A.',buyerShort:'Construtora Vale Verde',items:[{sku:'PAR-M8-060',qty:300}],total:141.00,status:'pag-ok'},
+    {id:'PED-000457',date:'09/05/2025',quote:'COT-000111',sup:'sup-safe',buyer:BUYER_COMPANY,buyerShort:BUYER_SHORT,items:[{sku:'EPI-CP-002',qty:40},{sku:'EPI-OC-001',qty:80}],total:1240.00,status:'proc'}
+  ],
+  seq:{q:125,p:458,pr:32}
+};
+
+/* ================================================================
+   === ROTA DASHBOARD ===
+   Integração com dashboard.html + dashboard.js:
+   1) saveSessao(): espelha o estado da sessão no localStorage
+      a cada render — a dashboard lê e exibe os dados deste perfil.
+   2) dashURL(go,secao): monta dashboard.html?perfil=...&go=...&secao=...
+      com base no perfil ATIVO (nunca há troca de perfil na dashboard).
+   3) retomarSessao(): ao voltar de dashboard.html?retomar=1,
+      restaura a sessão e cai na tela pedida (&go=).
+   4) clearSessao(): logout / troca de perfil invalidam a sessão.
+   ================================================================ */
+var DASH_ROUTES_BUYER=['dashB','catalog','cart','quoteNew','quotes','quoteDetail','compare','ordersB','profileB','notifs','roadmap'];
+var DASH_ROUTES_SUP=['dashS','quotesSup','quoteResp','proposalReview','proposalSent','productsSup','reqProduct','ordersS','company','notifs','roadmap'];
+
+function saveSessao(){
+  try{
+    if(!S.profile || !S.user){ return; }
+    localStorage.setItem('dushell_sessao', JSON.stringify({
+      perfil:S.profile, user:S.user,
+      buyerCompany:BUYER_COMPANY, buyerShort:BUYER_SHORT, demoSup:DEMO_SUP,
+      quotes:S.quotes, orders:S.orders, cart:S.cart, notifs:S.notifs, ts:Date.now()
+    }));
+  }catch(e){}
+}
+function clearSessao(){
+  try{ localStorage.removeItem('dushell_sessao'); }catch(e){}
+}
+function dashURL(go, secao){
+  var p=(S.profile==='supplier')?'fornecedor':'comprador';
+  return 'dashboard.html?perfil='+p
+    +(go?('&go='+encodeURIComponent(go)):'')
+    +(secao?('&secao='+encodeURIComponent(secao)):'');
+}
+function retomarSessao(){
+  try{
+    var q=new URLSearchParams(location.search);
+    if(q.get('retomar')!=='1'){ return; }
+    var s=null;
+    try{ s=JSON.parse(localStorage.getItem('dushell_sessao')||'null'); }catch(e){ s=null; }
+    if(s && s.user && s.perfil){
+      S.profile=s.perfil; S.user=s.user;
+      if(s.buyerCompany){ BUYER_COMPANY=s.buyerCompany; }
+      if(s.buyerShort){ BUYER_SHORT=s.buyerShort; }
+      if(s.demoSup){ DEMO_SUP=s.demoSup; }
+      var dest=q.get('go');
+      var lista=(s.perfil==='supplier')?DASH_ROUTES_SUP:DASH_ROUTES_BUYER;
+      S.screen=(dest && lista.indexOf(dest)>-1) ? dest : (s.perfil==='supplier'?'dashS':'dashB');
+      setTimeout(function(){
+        toast('Sessão retomada — '+(s.perfil==='supplier'?'fornecedor':'comprador')+' de demonstração.');
+      },300);
+    }
+  }catch(e){}
+}
+
+/* ---------- helpers de domínio ---------- */
+function getQuote(id){ for(var i=0;i<S.quotes.length;i++){ if(S.quotes[i].id===id) return S.quotes[i]; } return null; }
+function myQuotes(){ return S.quotes.filter(function(q){ return q.buyer===BUYER_COMPANY; }).sort(function(a,b){ return b.id.localeCompare(a.id); }); }
+function supQuotes(){ return S.quotes.filter(function(q){ return q.notified.indexOf(DEMO_SUP)>-1; }).sort(function(a,b){ return b.id.localeCompare(a.id); }); }
+function newSupCount(){ return supQuotes().filter(function(q){ return q.status!=='expirada' && !q.proposals.some(function(p){ return p.sup===DEMO_SUP; }); }).length; }
+function unreadCount(w){ return S.notifs[w].filter(function(n){ return n.unread; }).length; }
+function itemForSup(it,sid){ return !it.sup || it.sup===sid; }
+function itemsForSup(q,sid){ return q.items.filter(function(it){ return itemForSup(it,sid); }); }
+function recomputeStatus(q){
+  var answered=0,refused=0;
+  q.notified.forEach(function(sid){
+    var pr=q.proposals.find(function(p){ return p.sup===sid; });
+    if(pr){ if(pr.refused){ refused++; } else { answered++; } }
+  });
+  if(answered===0 && refused>0 && refused===q.notified.length){ q.status='recusada'; return; }
+  if(answered===0){ q.status='aguardando'; return; }
+  q.status=(answered<q.notified.length)?'parcial':'respondida';
+}
+function propTotal(q,pr){ var t=0; q.items.forEach(function(it){ if(itemForSup(it,pr.sup)){ var l=pr.lines[it.sku]; if(l){ t+=l.price*it.qty; } } }); return t; }
+function propCovered(q,pr){ var n=0; q.items.forEach(function(it){ if(itemForSup(it,pr.sup) && pr.lines[it.sku]){ n++; } }); return n; }
+function propMaxTerm(pr){ var m=0; for(var k in pr.lines){ var l=pr.lines[k]; if(l && l.term>m){ m=l.term; } } return m; }
+function isOffering(sku){ return S.disp[sku]===undefined?true:!!S.disp[sku]; }
+function cartQtyOf(sku){ return S.cart.filter(function(i){ return i.sku===sku; }).reduce(function(a,i){ return a+i.qty; },0); }
+
+/* ---------- feedback UI ---------- */
+function toast(msg,type){
+  var t=document.createElement('div');
+  t.className='toast '+(type||'ok');
+  var ic=type==='warn'?'alert-triangle':(type==='err'?'x-circle':'check-circle-2');
+  t.innerHTML='<i data-lucide="'+ic+'"></i><span>'+msg+'</span>';
+  $('toast-root').appendChild(t); refreshIcons();
+  setTimeout(function(){ t.classList.add('out'); setTimeout(function(){ if(t.parentNode){ t.parentNode.removeChild(t); } },350); },3400);
+}
+function modal(html,wide){
+  closeModal();
+  var d=document.createElement('dialog');
+  d.className='mbox'+(wide?' wide':'');
+  d.innerHTML=html;
+  $('modal-root').appendChild(d);
+  if(d.showModal){ d.showModal(); } else { d.setAttribute('open',''); d.classList.add('fallback'); }
+  d.addEventListener('click',function(e){ if(e.target===d){ d.close(); } });
+  d.addEventListener('close',function(){ if(d.parentNode){ d.parentNode.removeChild(d); } });
+  refreshIcons();
+  return d;
+}
+function closeModal(){
+  document.querySelectorAll('dialog[open]').forEach(function(d){ try{ d.close(); }catch(e){} });
+  $('modal-root').innerHTML='';
+}
+var confirmCb=null;
+function confirmModal(o){
+  confirmCb=o.onOk||null;
+  modal('<div class="m-head"><h3>'+o.title+'</h3><button class="m-x" onclick="closeModal()" aria-label="Fechar"><i data-lucide="x"></i></button></div>'
+    +'<div class="m-body">'+o.body+'</div>'
+    +'<div class="m-foot"><button class="btn btn-s" onclick="closeModal()">Voltar</button>'
+    +'<button class="btn '+(o.danger?'btn-d':'btn-p')+'" onclick="confirmYes()">'+o.okLabel+'</button></div>',o.wide);
+}
+function confirmYes(){ var cb=confirmCb; confirmCb=null; if(cb){ cb(); } closeModal(); }
+function run(msg,ms,cb){
+  $('load-root').innerHTML='<div class="load-ovl"><div class="spin"></div><div class="load-t">'+msg+'</div></div>';
+  setTimeout(function(){ $('load-root').innerHTML=''; if(cb){ cb(); } },ms||800);
+}
+
+/* ---------- componentes auxiliares ---------- */
+function badge(st,map){ var m=map[st]||map['aguardando']; return '<span class="bdg '+m.c+'"><i data-lucide="'+m.i+'"></i>'+m.l+'</span>'; }
+function dispBadge(a){ var m=AVAILMAP[a]||AVAILMAP['Disponível']; return '<span class="disp '+m[1]+'"><span class="d '+m[0]+'"></span>'+a+'</span>'; }
+function RN(){ return '<span class="tag-rn"><i data-lucide="info"></i>Regra de negócio a definir</span>'; }
+function FUT(t){ return '<span class="tag-fut"><i data-lucide="clock"></i>'+(t||'Etapa futura')+'</span>'; }
+function logoBox(sz){
+  return '<span class="logo-sq" style="width:'+sz+'px;height:'+sz+'px;font-size:'+Math.round(sz*0.52)+'px">d</span>';
+}
+
+/* ---------- navegação ---------- */
+function go(screen,id){
+  S.screen=screen;
+  if(screen==='quoteDetail'||screen==='compare'){ if(id){ S.qid=id; } }
+  if(screen==='quoteResp'||screen==='proposalSent'){ if(id){ S.sqid=id; } }
+  document.body.classList.remove('nav-open');
+  closeModal();
+  render();
+  window.scrollTo(0,0);
+}
+function startProfile(p){ S.pick=p; S.authTab='login'; go('auth'); }
+function pickContinue(){ if(!S.pick){ toast('Escolha um perfil para continuar.','warn'); return; } S.authTab='login'; go('auth'); }
+function enterDemo(profile){
+  S.profile=profile;
+  if(profile==='buyer'){
+    S.user={name:BUYER_COMPANY,short:BUYER_SHORT,resp:'Marcos Silva',type:'PJ',ini:'CS',city:'Campinas/SP',
+      addr:'Rua das Serrarias, 410 — Distrito Industrial',email:'comercial@comercialsilva.com.br',tel:'(19) 3232-8800',whats:'(19) 99887-2200'};
+  } else {
+    var s=SUPPLIERS[DEMO_SUP];
+    S.user={name:s.name,short:s.short,resp:'Carlos Andrade',type:'PJ',ini:s.ini,city:s.city,
+      addr:'Av. das Indústrias, 2250 — Distrito Industrial',email:'comercial@cavalodeferro.com.br',tel:'(19) 3777-4500',whats:'(19) 99778-1122'};
+  }
+}
+function doLogin(form){
+  if(!reqOk(form)){ return; }
+  run('Entrando na plataforma…',800,function(){
+    enterDemo(S.pick||'buyer');
+    toast('Login simulado — a autenticação real é implementada na Etapa 2.');
+    go(S.pick==='supplier'?'dashS':'dashB');
+  });
+}
+function demoLogin(){
+  run('Entrando com conta de demonstração…',750,function(){
+    enterDemo(S.pick||'buyer');
+    toast('Você entrou no ambiente de demonstração.');
+    go(S.pick==='supplier'?'dashS':'dashB');
+  });
+}
+function exploreSup(){
+  run('Carregando ambiente do fornecedor…',700,function(){
+    enterDemo('supplier');
+    toast('Você entrou como fornecedor aprovado (demonstração).');
+    go('dashS');
+  });
+}
+function logout(){ clearSessao(); S.user=null; S.profile=null; S.cart=[]; go('entry'); }
+function switchProfile(){ closeMenuOnce(); clearSessao(); S.user=null; S.profile=null; S.pick=null; go('pick'); toast('Escolha o outro perfil para continuar a demonstração.','warn'); }
+function topSearchKey(ev,val){ if(ev && ev.key==='Enter'){ S.f.q=val||''; go('catalog'); } }
+
+/* ---------- menu do usuário ---------- */
+function toggleUserMenu(ev){
+  if(ev){ ev.stopPropagation(); }
+  var m=$('umenu'); if(!m){ return; }
+  if(m.style.display==='block'){ m.style.display='none'; return; }
+  m.innerHTML='<div class="um-inner">'
+    +'<a class="nav-i" href="'+dashURL()+'" style="text-decoration:none" onclick="closeMenuOnce()">'
+    +'<i data-lucide="bar-chart-3"></i><span>Estatísticas</span>'
+    +'<i data-lucide="external-link" class="next"></i></a>'
+    +'<button class="nav-i" onclick="switchProfile()"><i data-lucide="refresh-cw"></i><span>Trocar perfil (demo)</span></button>'
+    +'<button class="nav-i" onclick="closeMenuOnce();openScript();"><i data-lucide="list-checks"></i><span>Roteiro de demonstração</span></button>'
+    +'<button class="nav-i" onclick="closeMenuOnce();logout();"><i data-lucide="log-out"></i><span>Sair</span></button>'
+    +'</div>';
+  m.style.display='block'; refreshIcons();
+  document.addEventListener('click',closeMenuOnce);
+}
+function closeMenuOnce(){ var m=$('umenu'); if(m){ m.style.display='none'; } document.removeEventListener('click',closeMenuOnce); }
+function openScript(){
+  modal('<div class="m-head"><h3>Roteiro de demonstração sugerido</h3><button class="m-x" onclick="closeModal()" aria-label="Fechar"><i data-lucide="x"></i></button></div>'
+    +'<div class="m-body">'
+    +'<p style="font-size:13.5px;color:var(--mut);margin-bottom:14px">Três percursos que mostram o produto de ponta a ponta (aprox. 10 minutos):</p>'
+    +'<div class="panel p-pad" style="box-shadow:none;margin-bottom:12px"><b style="font-family:Sora,sans-serif;font-size:14.5px;color:var(--navy)">1 · Comprador ponta a ponta</b>'
+    +'<div class="flowline" style="border:none;padding-top:8px;margin-top:4px;color:#44506E">Sou Comprador → conta demo → Produtos (cards) → filtrar por fornecedor → Parafuso M8×40 → no modal, escolher Cavalo de Ferro ou Alunizando o Mundo → ajustar quantidade → Carrinho → Solicitar Cotação → Enviar → ver o e-mail → Minhas Cotações → COT-000118 → Comparar propostas → Selecionar proposta → Pedido</div></div>'
+    +'<div class="panel p-pad" style="box-shadow:none;margin-bottom:12px"><b style="font-family:Sora,sans-serif;font-size:14.5px;color:var(--navy)">2 · Fornecedor ponta a ponta</b>'
+    +'<div class="flowline" style="border:none;padding-top:8px;margin-top:4px;color:#44506E">Sou Fornecedor → conta demo (Cavalo de Ferro) → Cotações → COT-000119 → informar preço, disponibilidade e prazo → Revisar → Enviar proposta</div></div>'
+    +'<div class="panel p-pad" style="box-shadow:none;border-color:var(--blue)"><b style="font-family:Sora,sans-serif;font-size:14.5px;color:var(--blue-d)">3 · Fluxo cruzado (momento-chave)</b>'
+    +'<p style="font-size:13px;color:var(--mut);margin-top:6px">Como comprador, cote o Parafuso M8×40 escolhendo <b>Cavalo de Ferro</b> no modal do produto e envie. Depois use "Trocar perfil": a cotação chega ao fornecedor apenas com os itens direcionados a ele. Responda e volte ao comprador — a proposta aparece pronta para comparação, ao vivo.</p></div>'
+    +'<div class="note" style="margin-top:12px"><i data-lucide="bar-chart-3"></i><div><b>Extra:</b> abra o <b>Dashboard analítico</b> (dashboard.html) pela sidebar — ele é <b>orientado à sessão</b>: mostra apenas a visão do perfil ativo (sem abas de troca) e reflete as cotações criadas nesta sessão.</div></div>'
+    +'</div>'
+    +'<div class="m-foot"><button class="btn btn-p" onclick="closeModal()"><i data-lucide="check"></i>Entendi, vamos demonstrar</button></div>',true);
+}
+
+/* ================================================================
+   COMPONENTES DE LAYOUT
+   ================================================================ */
+function pubHead(){
+  return '<header class="pub-head">'
+    +'<div class="brand">'+logoBox(36)+'<div class="nm">dushell<small>COMPRAS · COTAÇÕES · B2B</small></div></div>'
+    +'<nav style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'
+    +'<a class="btn btn-g btn-sm" href="'+dashURL()+'" title="Abre a visão analítica do perfil ativo"><i data-lucide="bar-chart-3"></i>Estatísticas</a>'
+    +'<a class="btn btn-g btn-sm" onclick="go(\'roadmap\')">Próximas etapas</a>'
+    +'<button class="btn btn-s btn-sm" onclick="go(\'pick\')"><i data-lucide="log-in"></i>Entrar</button>'
+    +'<button class="btn btn-p btn-sm" onclick="openScript()"><i data-lucide="list-checks"></i>Roteiro</button>'
+    +'</nav></header>';
+}
+function pubFoot(){
+  return '<footer class="pubfoot"><b>dushell</b> · Protótipo de alta fidelidade — primeira entrega · Fluxos simulados com dados fictícios · Protótipo conduzido por Leonidas “Shell”</footer>';
+}
+function crumbHTML(parts){
+  var h=parts.map(function(p){
+    if(p.screen){ return '<a onclick="go(\''+p.screen+'\''+(p.id?',\''+p.id+'\'':'')+')">'+p.label+'</a>'; }
+    return '<span class="cur">'+p.label+'</span>';
+  }).join('<i data-lucide="chevron-right" class="cr-sep"></i>');
+  return '<div class="crumb">'+h+'</div>';
+}
+function pageHead(crumbs,title,sub,acts,us,story){
+  return (crumbs?crumbHTML(crumbs):'')
+    +'<div class="page-h"><div>'
+    +(us?'<div class="uslab">'+us+'</div>':'')
+    +'<h1>'+title+'</h1>'
+    +(sub?'<div class="sub">'+sub+'</div>':'')
+    +'</div>'+(acts?'<div class="acts">'+acts+'</div>':'')+'</div>'
+    +(story?'<div class="story"><i data-lucide="clipboard-list"></i><span>'+story+'</span></div>':'');
+}
+function buyerNav(){
+  return [['dashB','Dashboard','layout-dashboard',0],['catalog','Produtos','package',0],['cart','Carrinho','shopping-cart',S.cart.length],
+    ['quotes','Minhas Cotações','file-text',0],['ordersB','Meus Pedidos','truck',0],
+    ['notifs','Notificações','bell',unreadCount('buyer')],['profileB','Meu Perfil','user',0]];
+}
+function supplierNav(){
+  return [['dashS','Dashboard','layout-dashboard',0],['quotesSup','Cotações Recebidas','file-text',newSupCount()],
+    ['productsSup','Meus Produtos','package',0],['reqProduct','Solicitar Produto','package-plus',0],
+    ['ordersS','Meus Pedidos','truck',0],['notifs','Notificações','bell',unreadCount('supplier')],['company','Minha Empresa','building-2',0]];
+}
+function appShell(active,tbTitle,tbSub,content){
+  var nav=S.profile==='supplier'?supplierNav():buyerNav();
+  var unread=unreadCount(S.profile==='supplier'?'supplier':'buyer');
+  var navHtml=nav.map(function(n){
+    return '<button class="nav-i'+(active===n[0]?' on':'')+'" onclick="go(\''+n[0]+'\')">'
+      +'<i data-lucide="'+n[2]+'"></i><span>'+n[1]+'</span>'
+      +(n[3]>0?'<span class="nbdg">'+n[3]+'</span>':'')+'</button>';
+  }).join('');
+  var isBuyer=S.profile!=='supplier';
+  var searchHtml=isBuyer
+    ? '<div class="tb-search"><i data-lucide="search"></i><input placeholder="Buscar na Dushell…" onkeydown="topSearchKey(event,this.value)"></div>'
+    : '';
+  var bnavItems=isBuyer
+    ? [['dashB','Visão geral','layout-dashboard'],['catalog','Catálogo','package'],['cart','Carrinho','shopping-cart'],['quotes','Cotações','file-text'],['ordersB','Pedidos','truck']]
+    : [['dashS','Visão geral','layout-dashboard'],['quotesSup','Cotações','file-text'],['productsSup','Produtos','package'],['ordersS','Pedidos','truck'],['company','Empresa','building-2']];
+  var bnav='<nav class="bnav">'+bnavItems.map(function(n){
+    return '<button class="'+(active===n[0]?'on':'')+'" onclick="go(\''+n[0]+'\')"><i data-lucide="'+n[2]+'"></i><span>'+n[1]+'</span></button>';
+  }).join('')+'</nav>';
+  return '<div class="shell">'
+    +'<aside class="sb">'
+    +'<div class="sb-logo">'+logoBox(36)+'<div class="nm">dushell<small>'+(isBuyer?'ÁREA DO COMPRADOR':'ÁREA DO FORNECEDOR')+'</small></div></div>'
+    +'<nav class="nav"><div class="nav-lb">Navegação</div>'+navHtml
+    +'<div class="nav-lb">Protótipo</div>'
+    /* === ROTA DASHBOARD === item da sidebar com a rota do perfil ativo */
+    +'<a class="nav-i" href="'+dashURL()+'" style="text-decoration:none">'
+    +'<i data-lucide="bar-chart-3"></i><span>Estatísticas</span>'
+    +'<i data-lucide="external-link" class="next"></i></a>'
+    +'<button class="nav-i" onclick="go(\'roadmap\')"><i data-lucide="map"></i><span>Próximas etapas</span></button>'
+    +'<button class="nav-i" onclick="openScript()"><i data-lucide="list-checks"></i><span>Roteiro de demo</span></button>'
+    +'</nav>'
+    +'<div class="sb-ft"><div class="sb-cred">Protótipo · Leonidas “Shell”</div>'
+    +'<div class="ubox" onclick="toggleUserMenu(event)">'
+    +'<div class="avat">'+S.user.ini+'</div>'
+    +'<div><div class="un">'+esc(S.user.short)+'</div><div class="ur">'+(isBuyer?'Comprador · '+S.user.type:'Fornecedor parceiro')+'</div></div>'
+    +'<i data-lucide="chevron-up-down"></i></div>'
+    +'<div id="umenu"></div></div>'
+    +'</aside>'
+    +'<div class="nav-ovl" onclick="document.body.classList.remove(\'nav-open\')"></div>'
+    +'<main class="main">'
+    +'<div class="topbar">'
+    +'<button class="icobtn" id="hamb" onclick="document.body.classList.add(\'nav-open\')" aria-label="Abrir menu"><i data-lucide="menu"></i></button>'
+    +searchHtml
+    +'<div class="tb-title">'+tbTitle+'<small>'+tbSub+'</small></div>'
+    +'<div class="tb-sp"></div>'
+    +'<span class="bdg st-cop" style="cursor:default"><i data-lucide="shield-check"></i>'+(isBuyer?'Sessão demo — Comprador':'Fornecedor parceiro — demo')+'</span>'
+    +'<button class="icobtn" onclick="go(\'notifs\')" aria-label="Notificações"><i data-lucide="bell"></i>'+(unread?'<span class="nd">'+unread+'</span>':'')+'</button>'
+    +'<span class="avat" aria-hidden="true">'+S.user.ini+'</span>'
+    +'</div>'
+    +'<div class="wrap">'+content+'</div>'
+    +'</main>'+bnav+'</div>';
+}
+function emptyBox(icon,title,text,action){
+  return '<div class="empty"><div class="eic"><i data-lucide="'+icon+'"></i></div><b>'+title+'</b>'+text
+    +(action?'<div style="margin-top:18px">'+action+'</div>':'')+'</div>';
+}
+
+/* ---------- máscaras e formulários ---------- */
+function mk(el,kind){
+  var d=el.value.replace(/\D/g,'');
+  if(kind==='cpf'){ d=d.slice(0,11); el.value=d.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2'); }
+  if(kind==='cnpj'){ d=d.slice(0,14); el.value=d.replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3').replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d{1,2})$/,'$1-$2'); }
+  if(kind==='cep'){ d=d.slice(0,8); el.value=d.replace(/(\d{5})(\d{1,2})$/,'$1-$2'); }
+  if(kind==='tel'){ d=d.slice(0,11); el.value=d.replace(/^(\d{2})(\d)/,'($1) $2').replace(/(\d{4,5})(\d{4})$/,'$1-$2'); }
+}
+function v(name){ var d=S.draft[name]; return (d===undefined||d===null)?'':d; }
+function fld(name,label,req,type,ph,extra){
+  return '<div class="fld"><label>'+label+(req?'':' <span class="opt">(opcional)</span>')+'</label>'
+    +'<input class="inp" name="'+name+'" type="'+(type||'text')+'" placeholder="'+(ph||'')+'" '+(req?'data-req':'')
+    +(extra||'')+' value="'+esc(v(name))+'"></div>';
+}
+function selFld(name,label,opts,req){
+  return '<div class="fld"><label>'+label+(req?'':' <span class="opt">(opcional)</span>')+'</label>'
+    +'<select class="sel" name="'+name+'" '+(req?'data-req':'')+'>'
+    +opts.map(function(o){ return '<option'+(v(name)===o?' selected':'')+'>'+o+'</option>'; }).join('')
+    +'</select></div>';
+}
+function txaFld(name,label,req,ph){
+  return '<div class="fld"><label>'+label+(req?'':' <span class="opt">(opcional)</span>')+'</label>'
+    +'<textarea class="txa" name="'+name+'" '+(req?'data-req':'')+' placeholder="'+(ph||'')+'">'+esc(v(name))+'</textarea></div>';
+}
+function grab(form){ var o={}; if(form){ form.querySelectorAll('[name]').forEach(function(el){ o[el.name]=el.value.trim(); }); } return o; }
+function reqOk(form){
+  var ok=true, docFaltando=false;
+  form.querySelectorAll('[data-req]').forEach(function(el){
+    var bad=!el.value || !String(el.value).trim();
+    el.classList.toggle('bad',bad); if(bad){ ok=false; }
+  });
+  var V=window.DushellValida;
+  form.querySelectorAll('[data-doc]').forEach(function(el){
+    if(!V){ docFaltando=true; el.classList.add('bad'); ok=false; return; }
+    if(!el.value || !String(el.value).trim()){ el.classList.add('bad'); ok=false; return; }
+    var okDoc=V.docValido(el);
+    el.classList.toggle('bad',!okDoc);
+    if(!okDoc){ ok=false; }
+  });
+  form.querySelectorAll('input[data-reqchk]').forEach(function(el){
+    if(!el.checked){ ok=false; var lb=el.closest('.chkline'); if(lb){ lb.classList.add('bad'); } }
+  });
+  if(docFaltando){
+    toast('Arquivo “dushell-validacao.js” não encontrado ao lado do HTML — a validação de CPF/CNPJ é obrigatória e o avanço está bloqueado.','err');
+  } else if(!ok){
+    toast('Preencha os campos destacados com dados válidos para continuar.','warn');
+  }
+  return ok;
+}
+var UF_LIST=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+function addrFields(){
+  return '<div class="grid3">'+fld('cep','CEP',true,'text','00000-000',' maxlength="9" oninput="mk(this,\'cep\')"')
+    +selFld('uf','Estado',UF_LIST,true)+fld('cidade','Cidade',true,'text','Campinas')+'</div>'
+    +'<div class="grid3">'+fld('bairro','Bairro',true,'text','Bairro')+fld('logradouro','Logradouro',true,'text','Rua / Avenida')+fld('numero','Número',true,'text','123')+'</div>'
+    +fld('complemento','Complemento',false,'text','Sala, galpão, referência…');
+}
+function stepperHTML(steps,cur){
+  return '<div class="steps">'+steps.map(function(s,i){
+    return '<div class="st '+(i<cur?'done':(i===cur?'cur':''))+'">'
+      +'<div class="sn">'+(i<cur?'<i data-lucide="check"></i>':(i+1))+'</div><div class="sl">'+s+'</div></div>';
+  }).join('')+'</div>';
+}
+function notif(which,title,desc,icon){ S.notifs[which].unshift({t:title,d:desc,w:'agora',ic:icon,unread:true}); }
+
+/* ================================================================
+   TELAS PÚBLICAS
+   ================================================================ */
+function viewEntry(){
+  return pubHead()
+    +'<section class="hero"><div>'
+    +'<div class="uslab">US-001 / US-002 · Entrada e escolha de perfil</div>'
+    +'<h1>Compras por <em>cotação</em>, com o fornecedor certo para cada item.</h1>'
+    +'<p class="lead">A Dushell conecta compradores e fornecedores parceiros em um único ambiente: escolha o fornecedor de cada produto, monte sua solicitação, receba as propostas e compare as condições — tudo acompanhado pela distribuidora.</p>'
+    +'<div class="feat">'
+    +'<div class="fi"><div class="fic"><i data-lucide="package"></i></div><div><b>Catálogo com itens homologados</b><span>Produtos organizados por categoria, com o fornecedor de sua preferência.</span></div></div>'
+    +'<div class="fi"><div class="fic"><i data-lucide="file-text"></i></div><div><b>Cotação em vez de preço fixo</b><span>Você informa o volume; os fornecedores retornam preço, prazo e disponibilidade.</span></div></div>'
+    +'<div class="fi"><div class="fic"><i data-lucide="scale"></i></div><div><b>Comparação transparente de propostas</b><span>Todas as condições lado a lado. A decisão final é sua.</span></div></div>'
+    +'</div>'
+    +'<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px">'
+    +'<button class="btn btn-p btn-lg" onclick="go(\'pick\')"><i data-lucide="arrow-right"></i>Acessar a plataforma</button>'
+    +'<button class="btn btn-s btn-lg" onclick="openScript()"><i data-lucide="list-checks"></i>Roteiro de demonstração</button>'
+    +'</div>'
+    +'<div class="hero-foot"><span><b style="color:var(--navy)">Protótipo v0.3.3</b> — primeira entrega</span>'
+    +'<a href="'+dashURL()+'">Dashboard analítico →</a>'
+    +'<a onclick="go(\'roadmap\')">Próximas etapas →</a></div>'
+    +'</div>'
+    +'<aside class="heropanel">'
+    +'<div class="hp-t">Como você deseja acessar?</div>'
+    +'<div class="hp-s">Escolha seu perfil para entrar no ambiente correto.</div>'
+    +'<button class="pcard" onclick="startProfile(\'buyer\')">'
+    +'<div class="pic"><i data-lucide="shopping-cart"></i></div>'
+    +'<div><b>Sou Comprador</b><span>Quero comprar produtos, solicitar cotações e realizar pedidos.</span></div>'
+    +'<i data-lucide="arrow-right" class="go"></i></button>'
+    +'<button class="pcard" onclick="startProfile(\'supplier\')">'
+    +'<div class="pic"><i data-lucide="factory"></i></div>'
+    +'<div><b>Sou Fornecedor</b><span>Quero fornecer produtos, responder cotações e acompanhar pedidos.</span></div>'
+    +'<i data-lucide="arrow-right" class="go"></i></button>'
+    +'<div class="flowline">CATÁLOGO <i data-lucide="chevron-right"></i> FORNECEDOR <i data-lucide="chevron-right"></i> COTAÇÃO <i data-lucide="chevron-right"></i> PROPOSTAS <i data-lucide="chevron-right"></i> PEDIDO</div>'
+    +'<div class="hp-login"><span>Já possui conta? Faça login pelo seu perfil.</span>'
+    +'<button class="btn btn-dark btn-sm" onclick="startProfile(\'buyer\')"><i data-lucide="log-in"></i>Fazer login</button></div>'
+    +'</aside></section>'+pubFoot();
+}
+function viewPick(){
+  var pre=S.pick;
+  var btn=pre
+    ? '<button class="btn btn-p btn-lg" onclick="pickContinue()"><i data-lucide="arrow-right"></i>Continuar como '+(pre==='supplier'?'Fornecedor':'Comprador')+'</button>'
+    : '<button class="btn btn-p btn-lg" disabled>Selecione um perfil acima</button>';
+  return pubHead()
+    +'<div class="pick-wrap">'
+    +'<a class="back" onclick="go(\'entry\')"><i data-lucide="arrow-left"></i>Voltar ao início</a>'
+    +'<div class="uslab" style="text-align:center">US-001 · Escolha de perfil</div>'
+    +'<h1>Como você deseja acessar a plataforma?</h1>'
+    +'<p class="psub">Cada perfil tem uma experiência própria: produtos e cotações para compradores; propostas e pedidos para fornecedores.</p>'
+    +'<div class="story" style="max-width:560px;margin:0 auto 26px"><i data-lucide="clipboard-list"></i><span>Eu como visitante, preciso escolher se sou comprador ou fornecedor, para acessar a experiência adequada ao meu perfil.</span></div>'
+    +'<div class="pickgrid">'
+    +'<button class="pickc'+(pre==='buyer'?' sel':'')+'" onclick="S.pick=\'buyer\';render()">'
+    +'<span class="rad"></span><span class="pic"><i data-lucide="shopping-cart"></i></span>'
+    +'<b>Sou Comprador</b><p>Quero comprar produtos, solicitar cotações e realizar pedidos através da Dushell.</p>'
+    +'<span class="pl">Entrar como Comprador <i data-lucide="arrow-right"></i></span></button>'
+    +'<button class="pickc'+(pre==='supplier'?' sel':'')+'" onclick="S.pick=\'supplier\';render()">'
+    +'<span class="rad"></span><span class="pic"><i data-lucide="factory"></i></span>'
+    +'<b>Sou Fornecedor</b><p>Quero fornecer produtos, responder cotações e acompanhar pedidos junto à Dushell.</p>'
+    +'<span class="pl">Entrar como Fornecedor <i data-lucide="arrow-right"></i></span></button>'
+    +'</div>'
+    +'<div class="center">'+btn+'</div>'
+    +'</div>'+pubFoot();
+}
+function viewAuth(){
+  var buyer=S.pick!=='supplier';
+  var loginInner='<div class="auth-hrow"><h2>Bem-vindo de volta</h2></div>'
+    +'<form onsubmit="event.preventDefault();doLogin(this)">'
+    +'<div class="fld"><label>E-mail</label><input class="inp" type="email" data-req placeholder="seu@email.com.br"></div>'
+    +'<div class="fld"><label>Senha</label><input class="inp" type="password" data-req placeholder="••••••••"></div>'
+    +'<div class="note" style="margin:2px 0 14px"><i data-lucide="info"></i><div>A autenticação real é implementada na Etapa 2 — aqui o acesso é simulado.</div></div>'
+    +'<button class="btn btn-p blk btn-lg" type="submit"><i data-lucide="log-in"></i>Entrar como '+(buyer?'Comprador':'Fornecedor')+'</button>'
+    +'</form>'
+    +'<div class="divisor">ou, para a apresentação</div>'
+    +'<button class="demobtn" onclick="demoLogin()"><i data-lucide="zap"></i>'
+    +'<div><b>Entrar com conta de demonstração</b>'
+    +'<span>'+(buyer?BUYER_COMPANY+' (PJ) · Campinas/SP':SUPPLIERS[DEMO_SUP].name+' · Campinas/SP')+'</span></div></button>';
+  var signupInner;
+  if(buyer){
+    signupInner='<div class="auth-hrow"><h2>Crie sua conta de comprador</h2><span class="etchip">Etapa 1 de 4</span></div>'
+      +'<div class="note" style="margin-bottom:4px"><i data-lucide="info"></i><div>Nos diga <b>como você compra</b> — o formulário se adapta à sua escolha.</div></div>'
+      +'<div class="seg" role="radiogroup" aria-label="Tipo de compra">'
+      +'<label><input type="radio" name="btype" onchange="signupBuyerType(\'PF\')"><span>Pessoa Física</span></label>'
+      +'<label><input type="radio" name="btype" onchange="signupBuyerType(\'PJ\')"><span>Pessoa Jurídica</span></label>'
+      +'</div>'
+      +'<div class="hint" style="text-align:center">Na opção Pessoa Física, o campo principal muda para CPF.</div>';
+  } else {
+    signupInner='<div class="auth-hrow"><h2>Cadastre sua empresa</h2></div>'
+      +'<div class="note" style="margin-bottom:16px"><i data-lucide="info"></i><div>O cadastro de fornecedor é empresarial. Após o envio, sua empresa passa por <b>análise da Dushell</b> antes de operar.</div></div>'
+      +'<button class="btn btn-p blk btn-lg" onclick="S.sStep=0;go(\'signupS\')"><i data-lucide="arrow-right"></i>Iniciar cadastro de fornecedor</button>';
+  }
+  return pubHead()
+    +'<div class="auth-wrap">'
+    +'<a class="back" onclick="go(\'pick\')"><i data-lucide="arrow-left"></i>Escolher outro perfil</a>'
+    +'<div class="auth-card"><div class="auth-top">'
+    +'<span class="pchip"><i data-lucide="'+(buyer?'shopping-cart':'factory')+'"></i>Acesso — '+(buyer?'Comprador':'Fornecedor')+'</span>'
+    +'</div>'
+    +'<div class="authzone">'
+    +'<input class="vh" type="radio" name="authtab" id="at-login"'+(S.authTab!=='signup'?' checked':'')+'>'
+    +'<input class="vh" type="radio" name="authtab" id="at-signup"'+(S.authTab==='signup'?' checked':'')+'>'
+    +'<div class="auth-tabs"><label for="at-login">Entrar</label><label for="at-signup">Criar conta</label></div>'
+    +'<section class="tpanel tp-login">'+loginInner+'</section>'
+    +'<section class="tpanel tp-signup">'+signupInner+'</section>'
+    +'</div>'
+    +'</div></div>'+pubFoot();
+}
+function signupBuyerType(t){ S.buyType=t; S.bStep=0; go('signupB'); }
+
+/* ---------- cadastro do comprador ---------- */
+function bSteps(){ return S.buyType==='PF'?['Dados pessoais','Contato','Endereço','Acesso']:['Dados da empresa','Responsável','Endereço','Acesso']; }
+function bStepBody(){
+  var pf=S.buyType==='PF';
+  var terms='<label class="chkline" style="margin-top:4px"><input type="checkbox" data-reqchk> <span>Li e aceito os Termos de Uso e a Política de Privacidade (exemplos).</span></label>';
+  switch(S.bStep){
+    case 0:
+      return pf
+        ? '<div class="grid2">'+fld('nome','Nome completo',true,'text','Marina Silva')+fld('cpf','CPF',true,'text','000.000.000-00',' maxlength="14" oninput="mk(this,\'cpf\')" data-doc="cpf" autocomplete="off"')+'</div>'
+          +fld('nasc','Data de nascimento',true,'date')
+        : '<div class="grid2">'+fld('razao','Razão social',true,'text','Comercial Silva Ltda.')+fld('fantasia','Nome fantasia',false,'text','Comercial Silva')+'</div>'
+          +'<div class="grid2">'+fld('cnpj','CNPJ',true,'text','00.000.000/0000-00',' maxlength="18" oninput="mk(this,\'cnpj\')" data-doc="cnpj" autocomplete="off"')+fld('ie','Inscrição estadual',false,'text','Isento / número')+'</div>';
+    case 1:
+      return (pf?'':'<div class="grid3">'+fld('rnome','Nome do responsável',true,'text','Marcos Silva')+fld('rcpf','CPF do responsável',true,'text','000.000.000-00',' maxlength="14" oninput="mk(this,\'cpf\')" data-doc="cpf" autocomplete="off"')+fld('rcargo','Cargo / função',true,'text','Comprador')+'</div>')
+        +'<div class="grid3">'+fld('email','E-mail',true,'email','contato@empresa.com.br')+fld('tel','Telefone',true,'text','(00) 0000-0000',' maxlength="15" oninput="mk(this,\'tel\')"')+fld('whats','WhatsApp',false,'text','(00) 00000-0000',' maxlength="15" oninput="mk(this,\'tel\')"')+'</div>';
+    case 2:
+      return addrFields();
+    default:
+      return '<div class="grid2">'+fld('aemail','E-mail de acesso',true,'email','usado para entrar na plataforma')+'<div></div></div>'
+        +'<div class="grid2">'+fld('senha','Senha',true,'password','mínimo 6 caracteres')+fld('senha2','Confirmar senha',true,'password','repita a senha')+'</div>'
+        +terms
+        +'<div class="note warnn" style="margin-top:6px"><i data-lucide="alert-triangle"></i><div>CPF e CNPJ são validados por <b>dígito verificador</b> (módulo dushell-validacao.js): valores inválidos não permitem avançar.</div></div>';
+  }
+}
+function viewSignupB(){
+  if(!S.buyType){ S.buyType='PJ'; }
+  var steps=bSteps();
+  return pubHead()
+    +'<div class="auth-wrap"><div class="auth-card"><div class="auth-top">'
+    +'<span class="pchip"><i data-lucide="shopping-cart"></i>Cadastro — Comprador · '+(S.buyType==='PF'?'Pessoa Física':'Pessoa Jurídica')+'</span>'
+    +'<div class="uslab" style="margin:2px 0 0">US-002 · Criação de conta</div>'
+    +'</div>'
+    +'<div class="tpanel" style="display:block">'
+    +'<div class="auth-hrow"><h2 style="font-size:20px;color:var(--navy)">'+steps[S.bStep]+'</h2><span class="etchip">Etapa '+(S.bStep+1)+' de 4</span></div>'
+    +stepperHTML(steps,S.bStep)
+    +'<form id="bform" onsubmit="event.preventDefault();bNext(1)" novalidate>'+bStepBody()
+    +'<div class="form-foot">'
+    +'<button class="btn btn-g" type="button" onclick="bNext(-1)"><i data-lucide="arrow-left"></i>'+(S.bStep===0?'Cancelar':'Voltar')+'</button>'
+    +'<button class="btn btn-p" type="submit">'+(S.bStep===3?'<i data-lucide="check"></i>Concluir cadastro':'Continuar cadastro<i data-lucide="arrow-right"></i>')+'</button>'
+    +'</div></form></div>'
+    +'</div></div>'+pubFoot();
+}
+function bNext(dir){
+  var form=$('bform');
+  if(dir>0){
+    if(!reqOk(form)){ return; }
+    if(S.bStep===3){
+      var g=grab(form);
+      if((g.senha||'').length<6){ toast('A senha deve ter ao menos 6 caracteres.','warn'); return; }
+      if(g.senha!==g.senha2){ toast('As senhas não conferem.','err'); return; }
+      S.draft=Object.assign(S.draft,g);
+      finishSignupB();
+      return;
+    }
+  }
+  if(form){ S.draft=Object.assign(S.draft,grab(form)); }
+  if(S.bStep===0 && dir<0){ S.screen='auth'; S.authTab='signup'; render(); window.scrollTo(0,0); return; }
+  S.bStep=Math.max(0,Math.min(3,S.bStep+dir));
+  render(); window.scrollTo(0,0);
+}
+function finishSignupB(){
+  run('Criando sua conta…',900,function(){
+    enterDemo('buyer');
+    toast('Conta criada (simulação) — ambiente de demonstração carregado.');
+    go('dashB');
+  });
+}
+
+/* ---------- cadastro do fornecedor ---------- */
+var S_STEPS=['Dados da empresa','Responsável e contato','Endereço','Acesso'];
+function sStepBody(){
+  var terms='<label class="chkline" style="margin-top:4px"><input type="checkbox" data-reqchk> <span>Li e aceito os Termos de Uso e a Política de Privacidade (exemplos).</span></label>';
+  switch(S.sStep){
+    case 0:
+      return '<div class="grid2">'+fld('razao','Razão social',true,'text','Cavalo de Ferro Metalúrgica Ltda.')+fld('fantasia','Nome fantasia',false,'text','Cavalo de Ferro')+'</div>'
+        +'<div class="grid2">'+fld('cnpj','CNPJ',true,'text','00.000.000/0000-00',' maxlength="18" oninput="mk(this,\'cnpj\')" data-doc="cnpj" autocomplete="off"')+fld('ie','Inscrição estadual',false,'text','Isento / número')+'</div>'
+        +selFld('segmento','Segmento principal',['Metalurgia e fixadores','Componentes elétricos','EPI e segurança','Embalagens','Hidráulica','Limpeza e higienização','Outro'],true)
+        +'<label style="font-size:12.5px;font-weight:600;color:#33406B;display:block;margin:2px 0 6px">Categorias de produtos fornecidos</label>'
+        +CATS.map(function(c){ return '<label class="chkline"><input type="checkbox"'+(v('cat_'+c)?' checked':'')+' onchange="S.draft[\'cat_'+c+'\']=this.checked"><span>'+c+'</span></label>'; }).join('');
+    case 1:
+      return '<div class="grid2">'+fld('rnome','Nome do responsável',true,'text','Carlos Andrade')+fld('rcargo','Cargo',true,'text','Diretor comercial')+'</div>'
+        +'<div class="grid3">'+fld('email','E-mail comercial',true,'email','vendas@empresa.com.br')+fld('tel','Telefone',true,'text','(00) 0000-0000',' maxlength="15" oninput="mk(this,\'tel\')"')+fld('whats','WhatsApp',false,'text','(00) 00000-0000',' maxlength="15" oninput="mk(this,\'tel\')"')+'</div>';
+    case 2:
+      return addrFields();
+    default:
+      return '<div class="grid2">'+fld('aemail','E-mail de acesso',true,'email','')+'<div></div></div>'
+        +'<div class="grid2">'+fld('senha','Senha',true,'password','mínimo 6 caracteres')+fld('senha2','Confirmar senha',true,'password','repita a senha')+'</div>'
+        +terms
+        +'<div class="note warnn" style="margin-top:6px"><i data-lucide="alert-triangle"></i><div>Novos fornecedores passam por <b>análise da Dushell</b> antes de receber cotações.</div></div>';
+  }
+}
+function viewSignupS(){
+  return pubHead()
+    +'<div class="auth-wrap"><div class="auth-card"><div class="auth-top">'
+    +'<span class="pchip"><i data-lucide="factory"></i>Cadastro — Fornecedor</span>'
+    +'<div class="uslab" style="margin:2px 0 0">US-009 · Cadastro empresarial</div>'
+    +'</div>'
+    +'<div class="tpanel" style="display:block">'
+    +'<div class="auth-hrow"><h2 style="font-size:20px;color:var(--navy)">'+S_STEPS[S.sStep]+'</h2><span class="etchip">Etapa '+(S.sStep+1)+' de 4</span></div>'
+    +stepperHTML(S_STEPS,S.sStep)
+    +'<form id="sform" onsubmit="event.preventDefault();sNext(1)" novalidate>'+sStepBody()
+    +'<div class="form-foot">'
+    +'<button class="btn btn-g" type="button" onclick="sNext(-1)"><i data-lucide="arrow-left"></i>'+(S.sStep===0?'Cancelar':'Voltar')+'</button>'
+    +'<button class="btn btn-p" type="submit">'+(S.sStep===3?'<i data-lucide="check"></i>Enviar para análise':'Continuar<i data-lucide="arrow-right"></i>')+'</button>'
+    +'</div></form></div>'
+    +'</div></div>'+pubFoot();
+}
+function sNext(dir){
+  var form=$('sform');
+  if(dir>0){
+    if(!reqOk(form)){ return; }
+    if(S.sStep===3){
+      var g=grab(form);
+      if((g.senha||'').length<6){ toast('A senha deve ter ao menos 6 caracteres.','warn'); return; }
+      if(g.senha!==g.senha2){ toast('As senhas não conferem.','err'); return; }
+      S.draft=Object.assign(S.draft,g);
+      run('Registrando solicitação de cadastro…',900,function(){ go('supPending'); });
+      return;
+    }
+  }
+  if(form){ S.draft=Object.assign(S.draft,grab(form)); }
+  if(S.sStep===0 && dir<0){ S.screen='auth'; S.authTab='signup'; render(); window.scrollTo(0,0); return; }
+  S.sStep=Math.max(0,Math.min(3,S.sStep+dir));
+  render(); window.scrollTo(0,0);
+}
+function viewSupPending(){
+  return pubHead()
+    +'<div class="auth-wrap"><div class="done-wrap"><div class="panel p-pad center">'
+    +'<div class="uslab">US-009 · Aprovação de fornecedor</div>'
+    +'<div class="done-ic" style="background:var(--info-t);color:var(--info)"><i data-lucide="hourglass"></i></div>'
+    +'<h2 style="font-size:22px;color:var(--navy)">Cadastro recebido</h2>'
+    +'<p style="color:var(--mut);margin:10px 0 24px">Sua empresa entrou na fila de análise. O acesso completo à área de cotações é liberado após a aprovação da Dushell.</p>'
+    +'<div class="timeline" style="text-align:left;max-width:380px;margin:0 auto 8px">'
+    +'<div class="tl-i done"><b>Cadastro realizado</b><span>Formulário enviado e protocolado em '+nowDT()+'.</span></div>'
+    +'<div class="tl-i cur"><b>Em análise pela Dushell</b><span>Validação dos dados cadastrais e do mix de produtos.</span><div style="margin-top:8px">'+FUT('Etapa conceitual — módulo administrativo é futuro')+'</div></div>'
+    +'<div class="tl-i"><b>Aprovado / Reprovado</b><span>Resultado comunicado por e-mail.</span></div>'
+    +'</div>'
+    +'<div style="margin-top:20px">'+RN()+'</div><hr class="sep">'
+    +'<button class="btn btn-p blk btn-lg" onclick="exploreSup()"><i data-lucide="arrow-right"></i>Explorar a plataforma em modo demonstração</button>'
+    +'<div class="hint" style="text-align:center">Entra com o fornecedor fictício '+SUPPLIERS[DEMO_SUP].short+' para visualizar a experiência aprovada.</div>'
+    +'</div></div></div>'+pubFoot();
+}
+
+/* ================================================================
+   COMPRADOR
+   ================================================================ */
+function viewDashB(){
+  var mine=myQuotes();
+  var abertas=mine.filter(function(q){ return q.status==='aguardando'||q.status==='parcial'; }).length;
+  var parciais=mine.filter(function(q){ return q.status==='parcial'; }).length;
+  var respondidas=mine.filter(function(q){ return q.status==='respondida'; }).length;
+  var meus=S.orders.filter(function(o){ return o.buyer===BUYER_COMPANY; });
+  var andamento=meus.filter(function(o){ return o.status!=='concl'&&o.status!=='cancel'; }).length;
+  var concl=meus.filter(function(o){ return o.status==='concl'; }).length;
+  var ready=mine.find(function(q){ return (q.status==='respondida'||q.status==='parcial') && !q._winner; });
+  var alertHtml=ready
+    ? '<button class="qact" onclick="go(\'compare\',\''+ready.id+'\')"><div class="qa-ic"><i data-lucide="scale"></i></div>'
+      +'<div><b>'+ready.proposals.filter(function(p){return !p.refused;}).length+' proposta(s) pronta(s) para comparação em '+ready.id+'</b>'
+      +'<span>Analise preço, prazo e disponibilidade dos fornecedores e escolha a melhor condição.</span></div>'
+      +'<span class="btn btn-p btn-sm">Comparar agora</span></button>'
+    : '';
+  return appShell('dashB','Dashboard','Visão geral das suas compras e cotações',
+    '<div class="dash-hi"><div><div class="uslab">US-006 / US-008 · Painel do comprador</div><h1>Olá, '+esc(S.user.resp)+'.</h1>'
+    +'<div class="dt">'+new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})+' · '+esc(S.user.name)+' · Pessoa Jurídica</div></div>'
+    +'<button class="btn btn-p" onclick="go(\'catalog\')"><i data-lucide="package"></i>Comprar produtos</button></div>'
+    +'<div class="story"><i data-lucide="clipboard-list"></i><span>Eu como comprador, preciso de uma visão geral das minhas cotações e pedidos, para decidir os próximos passos da minha compra.</span></div>'
+    +alertHtml
+    +'<div class="kstrip">'
+    +'<button class="kpi" onclick="go(\'quotes\')"><div class="kv">'+abertas+'</div><div class="kl">Cotações abertas / aguardando resposta</div></button>'
+    +'<button class="kpi" onclick="setQF(\'parcial\')"><div class="kv">'+parciais+'</div><div class="kl">Parcialmente respondidas</div></button>'
+    +'<button class="kpi" onclick="setQF(\'respondida\')"><div class="kv">'+respondidas+'</div><div class="kl">Cotações respondidas</div></button>'
+    +'<button class="kpi" onclick="go(\'ordersB\')"><div class="kv">'+andamento+'</div><div class="kl">Pedidos em andamento</div></button>'
+    +'<button class="kpi" onclick="go(\'ordersB\')"><div class="kv">'+concl+'</div><div class="kl">Pedidos concluídos</div></button>'
+    +'</div>'
+    +'<div class="dashgrid">'
+    +'<div class="panel p-pad"><div class="ph"><h3>Atividade recente</h3><a onclick="go(\'notifs\')">Ver todas</a></div><div class="qlist">'
+    +S.notifs.buyer.slice(0,4).map(function(n){
+      return '<div class="qitem" onclick="go(\'notifs\')"><div class="qic"><i data-lucide="'+n.ic+'"></i></div>'
+        +'<div><b>'+n.t+'</b><span>'+n.d+'</span></div><div class="w">'+n.w+'</div></div>';
+    }).join('')
+    +'</div></div>'
+    +'<div class="panel p-pad"><div class="ph"><h3>Acesso rápido</h3></div><div class="quick">'
+    +'<button onclick="go(\'catalog\')"><i data-lucide="package"></i>Comprar produtos</button>'
+    +'<button onclick="go(\'cart\')"><i data-lucide="shopping-cart"></i>Meu carrinho'+(S.cart.length?'<span class="cnt">'+S.cart.length+' item(ns)</span>':'')+'</button>'
+    +'<button onclick="go(\'quoteNew\')"><i data-lucide="file-text"></i>Nova cotação</button>'
+    +'<button onclick="go(\'quotes\')"><i data-lucide="clipboard-list"></i>Minhas cotações</button>'
+    +'<button onclick="go(\'ordersB\')"><i data-lucide="truck"></i>Meus pedidos</button>'
+    +'<button onclick="go(\'profileB\')"><i data-lucide="user"></i>Meu perfil</button>'
+    +'<button onclick="window.open(dashURL(\'quotes\'),\'_blank\')"><i data-lucide="bar-chart-3"></i>Estatísticas</button>'
+    +'</div><hr class="sep">'
+    +'<div class="note"><i data-lucide="info"></i><div><b>Cotação ≠ Pedido.</b> A cotação pergunta preço e condições; o pedido efetiva a compra após a escolha de uma proposta.</div></div>'
+    +'</div></div>');
+}
+
+/* ---------- catálogo em cards ---------- */
+function filteredProducts(){
+  var q=S.f.q.toLowerCase();
+  var list=PRODUCTS.filter(function(p){
+    var okQ=!q || p.name.toLowerCase().indexOf(q)>-1 || p.sku.toLowerCase().indexOf(q)>-1 || p.brand.toLowerCase().indexOf(q)>-1;
+    var okC=S.f.cat==='Todas' || p.cat===S.f.cat;
+    var okS=S.f.sup==='Todos' || p.sup.indexOf(S.f.sup)>-1;
+    return okQ&&okC&&okS;
+  });
+  if(S.f.sort==='nome'){ list=list.slice().sort(function(a,b){ return a.name.localeCompare(b.name); }); }
+  if(S.f.sort==='sku'){ list=list.slice().sort(function(a,b){ return a.sku.localeCompare(b.sku); }); }
+  if(S.f.sort==='cat'){ list=list.slice().sort(function(a,b){ return a.cat.localeCompare(b.cat); }); }
+  return list;
+}
+function onCatalogSearch(val){ S.f.q=val; updateCatalogList(); }
+function setSort(val){ S.f.sort=val; updateCatalogList(); }
+function setCat(c){ S.f.cat=c; updateCatalogList(); }
+function setSup(val){ S.f.sup=val; updateCatalogList(); }
+function setQF(st){ S.qf=st; if(S.screen!=='quotes'){ S.screen='quotes'; } render(); window.scrollTo(0,0); }
+function catFilterText(){ return S.f.cat==='Todas'?'todas as categorias':S.f.cat; }
+function supFilterText(){ return S.f.sup==='Todos'?'todos os fornecedores':SUPPLIERS[S.f.sup].short; }
+function prodCards(list){
+  if(!list.length){
+    var motivo=(S.f.sup!=='Todos' && S.f.cat!=='Todas')
+      ?'Nenhum produto de '+esc(SUPPLIERS[S.f.sup].short)+' na categoria '+esc(S.f.cat)+'.'
+      :(S.f.sup!=='Todos'?'Este fornecedor ainda não tem itens no catálogo que correspondam à busca.':'Tente outro termo, código, marca ou categoria.');
+    return emptyBox('search-x','Nenhum produto encontrado',motivo,
+      '<button class="btn btn-s btn-sm" onclick="S.f.q=\'\';S.f.cat=\'Todas\';S.f.sup=\'Todos\';render();">Limpar filtros</button>');
+  }
+  return list.map(function(p){
+    var noCarrinho=cartQtyOf(p.sku);
+    return '<div class="pcard3 cat-'+slug(p.cat)+'">'
+      +'<button class="pcard3-img" onclick="openProduct(\''+p.sku+'\')" aria-label="Ver '+esc(p.name)+'">'
+      +'<img src="https://picsum.photos/seed/dsh-'+p.sku+'/420/420.jpg" alt="'+esc(p.name)+'"></button>'
+      +'<div class="pcard3-cat"><i data-lucide="'+CATICON[p.cat]+'"></i>'+p.cat+'</div>'
+      +'<div class="pcard3-nm" onclick="openProduct(\''+p.sku+'\')">'+p.name+'</div>'
+      +'<div class="pcard3-meta">'+p.unit+' · Marca '+p.brand+'</div>'
+      +'<div>'+dispBadge(p.avail)+'</div>'
+      +'<button class="btn btn-p blk btn-sm" onclick="openProduct(\''+p.sku+'\')">'
+      +(noCarrinho?'<i data-lucide="check"></i>No carrinho ('+noCarrinho+') — adicionar mais':'<i data-lucide="plus"></i>Adicionar à cotação')
+      +'</button>'
+      +'</div>';
+  }).join('');
+}
+function updateCatalogList(){
+  var list=filteredProducts();
+  var el=$('plist'); if(el){ el.innerHTML=prodCards(list); }
+  var c=$('pcount');
+  if(c){ c.textContent=list.length+' produto(s) · '+supFilterText()+' · '+catFilterText()+' · o fornecedor é escolhido dentro do produto'; }
+  refreshIcons();
+}
+function viewCatalog(){
+  var list=filteredProducts();
+  var chips=['Todas'].concat(CATS).map(function(c){
+    return '<label class="chip"><input type="radio" name="cc" id="cc-'+slug(c)+'" value="'+c+'"'+(S.f.cat===c?' checked':'')+' onchange="setCat(this.value)"><span>'+c+'</span></label>';
+  }).join('');
+  var supOpts=Object.keys(SUPPLIERS).map(function(sid){
+    return '<option value="'+sid+'"'+(S.f.sup===sid?' selected':'')+'>'+esc(SUPPLIERS[sid].short)+'</option>';
+  }).join('');
+  return appShell('catalog','Produtos','Catálogo de itens homologados pela Dushell',
+    pageHead([{label:'Dashboard',screen:'dashB'},{label:'Catálogo de produtos'}],'Produtos disponíveis',
+      'Itens homologados pela Dushell. Filtre por categoria ou fornecedor; a escolha final de quem cotar acontece dentro do produto.',
+      null,'US-003','Eu como comprador, preciso visualizar os produtos disponíveis e filtrar por fornecedor, para encontrar o item certo de quem quero comprar.')
+    +'<div class="toolbar">'
+    +'<div class="search"><i data-lucide="search"></i><input placeholder="Buscar por nome, código ou marca…" value="'+esc(S.f.q)+'" oninput="onCatalogSearch(this.value)"></div>'
+    +'<select class="sel" style="width:auto" onchange="setSup(this.value)" aria-label="Filtrar por fornecedor">'
+    +'<option value="Todos"'+(S.f.sup==='Todos'?' selected':'')+'>Fornecedor: todos</option>'
+    +supOpts
+    +'</select>'
+    +'<select class="sel" style="width:auto" onchange="setSort(this.value)">'
+    +'<option value="rel"'+(S.f.sort==='rel'?' selected':'')+'>Ordenar: relevância</option>'
+    +'<option value="nome"'+(S.f.sort==='nome'?' selected':'')+'>Ordenar: nome (A–Z)</option>'
+    +'<option value="sku"'+(S.f.sort==='sku'?' selected':'')+'>Ordenar: código</option>'
+    +'<option value="cat"'+(S.f.sort==='cat'?' selected':'')+'>Ordenar: categoria</option>'
+    +'</select></div>'
+    +'<div class="chips">'+chips+'</div>'
+    +'<div class="catzone"><div class="pgrid" id="plist">'+prodCards(list)+'</div></div>'
+    +'<div class="hint" id="pcount" style="margin-top:14px">'+list.length+' produto(s) · '+supFilterText()+' · '+catFilterText()+' · o fornecedor é escolhido dentro do produto</div>');
+}
+function openProduct(sku,preSup){
+  var p=P(sku); S.pq=1; S.pqs=preSup||p.sup[0]||null;
+  var supSel=p.sup.length>1
+    ? '<div class="fld"><label>De qual fornecedor você quer cotar este item? *</label><div class="supsel">'
+      +p.sup.map(function(sid){
+        var s=SUPPLIERS[sid];
+        return '<label><input type="radio" name="supsel-r" value="'+sid+'"'+(S.pqs===sid?' checked':'')+' onchange="S.pqs=this.value">'
+          +'<span class="sav">'+s.ini+'</span><div><b>'+esc(s.short)+'</b><small>'+esc(s.name)+' · '+s.city+'</small></div></label>';
+      }).join('')+'</div>'
+      +'<div class="hint">A cotação deste item será enviada apenas ao fornecedor escolhido. '+RN()+'</div></div>'
+    : (p.sup.length===1
+      ? '<div class="note" style="margin-bottom:6px"><i data-lucide="factory"></i><div>Ofertado exclusivamente por <b>'+SUPPLIERS[p.sup[0]].short+'</b>.</div></div>'
+      : '');
+  modal('<div class="m-head"><h3>Detalhe do produto</h3><button class="m-x" onclick="closeModal()" aria-label="Fechar"><i data-lucide="x"></i></button></div>'
+    +'<div class="m-body"><div class="pm-grid">'
+    +'<img src="https://picsum.photos/seed/dsh-'+p.sku+'/480/480.jpg" alt="'+esc(p.name)+'">'
+    +'<div><h3 style="font-size:18px;margin-bottom:6px;color:var(--navy)">'+p.name+'</h3>'
+    +'<div class="sku" style="margin-bottom:10px">'+p.sku+'</div>'
+    +dispBadge(p.avail)
+    +'<p style="font-size:13.5px;color:var(--mut);margin:12px 0">'+p.desc+'</p>'
+    +'<dl class="defg">'
+    +'<dt>Categoria</dt><dd>'+p.cat+'</dd>'
+    +'<dt>Marca</dt><dd>'+p.brand+'</dd>'
+    +'<dt>Unidade</dt><dd>'+p.unit+'</dd>'
+    +'<dt>Fornecedores parceiros</dt><dd>'+p.sup.map(function(s){ return SUPPLIERS[s].short; }).join(' · ')+'</dd>'
+    +'</dl>'
+    +'<div class="note" style="margin-top:12px"><i data-lucide="info"></i><div>Os preços não são exibidos no catálogo: o valor é definido pela proposta do fornecedor na cotação.</div></div>'
+    +'</div></div>'
+    +'<hr class="sep">'+supSel
+    +'<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">'
+    +'<span style="font-size:13.5px;font-weight:600">Quantidade ('+p.unit+'):</span>'
+    +'<div class="stepper"><button type="button" onclick="pqStep(-1)" aria-label="Diminuir">−</button>'
+    +'<input id="pq-input" type="number" min="1" value="1" onchange="pqSet(this.value)">'
+    +'<button type="button" onclick="pqStep(1)" aria-label="Aumentar">+</button></div>'
+    +'<button class="btn btn-p" style="margin-left:auto" onclick="addFromModal(\''+p.sku+'\')"><i data-lucide="shopping-cart"></i>Adicionar ao carrinho</button>'
+    +'</div></div>',true);
+}
+function pqStep(d){ S.pq=Math.max(1,(S.pq||1)+d); var el=$('pq-input'); if(el){ el.value=S.pq; } }
+function pqSet(val){ var n=parseInt(val,10); S.pq=isNaN(n)?1:Math.max(1,n); var el=$('pq-input'); if(el){ el.value=S.pq; } }
+function addFromModal(sku){
+  var p=P(sku);
+  if(p.sup.length>1 && !S.pqs){ toast('Escolha o fornecedor para este item.','warn'); return; }
+  addToCart(sku,S.pq||1,S.pqs||p.sup[0]||null,true);
+}
+function addToCart(sku,qty,sup,fromModal){
+  var ex=S.cart.find(function(i){ return i.sku===sku && i.sup===sup; });
+  if(ex){ ex.qty+=qty; } else { S.cart.push({sku:sku,qty:qty,sup:sup}); }
+  if(fromModal){ closeModal(); }
+  var supTxt=sup && SUPPLIERS[sup] ? ' · fornecedor '+SUPPLIERS[sup].short : '';
+  toast(qty+' × '+P(sku).name+supTxt+' — no carrinho.');
+  render();
+}
+
+/* ---------- carrinho ---------- */
+function cartStep(sku,sup,d){ var it=S.cart.find(function(i){ return i.sku===sku && i.sup===sup; }); if(!it){ return; } it.qty=Math.max(1,it.qty+d); render(); }
+function cartSetQty(sku,sup,val){ var it=S.cart.find(function(i){ return i.sku===sku && i.sup===sup; }); if(!it){ return; } var n=parseInt(val,10); it.qty=isNaN(n)?1:Math.max(1,Math.min(999999,n)); render(); }
+function askRemoveItem(sku,sup){
+  var p=P(sku);
+  var supTxt=sup && SUPPLIERS[sup] ? ' do fornecedor <b style="color:var(--ink)">'+esc(SUPPLIERS[sup].short)+'</b>' : '';
+  confirmModal({title:'Remover este item do carrinho?',
+    body:'<p style="font-size:14px;color:var(--mut)">O produto <b style="color:var(--ink)">'+p.name+'</b> ('+p.sku+')'+supTxt+' será retirado da sua solicitação de cotação.</p>',
+    okLabel:'<i data-lucide="trash-2"></i>Remover item',danger:true,
+    onOk:function(){ S.cart=S.cart.filter(function(i){ return !(i.sku===sku && i.sup===sup); }); toast('Item removido do carrinho.','warn'); render(); }});
+}
+function viewCart(){
+  var rows=S.cart.map(function(ci){ return {ci:ci,p:P(ci.sku)}; });
+  var totQty=rows.reduce(function(a,r){ return a+r.ci.qty; },0);
+  var body;
+  if(!rows.length){
+    body='<div class="panel">'+emptyBox('shopping-cart','Seu carrinho está vazio','Adicione produtos do catálogo — escolhendo o fornecedor de cada item — para montar sua solicitação.',
+      '<button class="btn btn-p" onclick="go(\'catalog\')"><i data-lucide="package"></i>Ver produtos</button>')+'</div>';
+  } else {
+    body='<div class="cartgrid"><div class="panel">'
+      +rows.map(function(r){
+        var supTxt=r.ci.sup && SUPPLIERS[r.ci.sup] ? ' · Fornecedor: '+esc(SUPPLIERS[r.ci.sup].short) : '';
+        return '<div class="crow">'
+          +'<img style="width:56px;height:56px;border-radius:10px;object-fit:cover;border:1px solid var(--line)" src="https://picsum.photos/seed/dsh-'+r.ci.sku+'/120/120.jpg" alt="'+esc(r.p.name)+'">'
+          +'<div><div style="font-weight:600;font-size:14px;color:var(--navy)">'+r.p.name+'</div><div class="sku">'+r.ci.sku+' · '+r.p.unit+supTxt+'</div></div>'
+          +'<div class="stepper"><button type="button" onclick="cartStep(\''+r.ci.sku+'\',\''+(r.ci.sup||'')+'\',-1)" aria-label="Diminuir">−</button>'
+          +'<input type="number" min="1" value="'+r.ci.qty+'" onchange="cartSetQty(\''+r.ci.sku+'\',\''+(r.ci.sup||'')+'\',this.value)">'
+          +'<button type="button" onclick="cartStep(\''+r.ci.sku+'\',\''+(r.ci.sup||'')+'\',1)" aria-label="Aumentar">+</button></div>'
+          +'<button class="btn btn-d btn-sm" onclick="askRemoveItem(\''+r.ci.sku+'\',\''+(r.ci.sup||'')+'\')" aria-label="Remover"><i data-lucide="trash-2"></i></button>'
+          +'</div>';
+      }).join('')
+      +'</div>'
+      +'<div class="sticky-side"><div class="panel p-pad">'
+      +'<h3 style="font-size:16px;margin-bottom:14px;color:var(--navy)">Resumo da solicitação</h3>'
+      +'<div class="sumrow"><span>Produtos distintos</span><b>'+rows.length+'</b></div>'
+      +'<div class="sumrow"><span>Quantidade total</span><b>'+fmtN(totQty)+'</b></div>'
+      +'<div class="sumrow"><span>Valor</span><b style="font-weight:500;color:var(--soft)">definido pelas propostas</b></div>'
+      +'<hr class="sep">'
+      +'<button class="btn btn-p blk btn-lg" onclick="go(\'quoteNew\')"><i data-lucide="file-text"></i>Solicitar Cotação</button>'
+      +'<div class="hint">Você revisará todos os dados antes do envio aos fornecedores.</div>'
+      +'</div></div></div>';
+  }
+  return appShell('cart','Carrinho',rows.length+' produto(s) · '+fmtN(totQty)+' unidade(s) no total',
+    pageHead([{label:'Dashboard',screen:'dashB'},{label:'Carrinho'}],'Meu carrinho de cotação',
+      'Ajuste as quantidades de cada item. Ao final, você enviará tudo como uma única solicitação de cotação.',
+      '<button class="btn btn-s" onclick="go(\'catalog\')"><i data-lucide="package"></i>Continuar comprando</button>',
+      'US-004','Eu como comprador, preciso adicionar, remover e alterar quantidades dos produtos, para montar exatamente aquilo que desejo cotar.')
+    +body);
+}
+
+/* ---------- nova cotação ---------- */
+function viewQuoteNew(){
+  if(!S.cart.length){
+    return appShell('quoteNew','Nova cotação','Nenhum item no carrinho',
+      pageHead([{label:'Dashboard',screen:'dashB'},{label:'Nova cotação'}],'Nova cotação','','','US-005','')
+      +'<div class="panel">'+emptyBox('file-text','Não há itens para cotar ainda','Adicione produtos ao carrinho para gerar uma solicitação de cotação.',
+        '<button class="btn btn-p" onclick="go(\'catalog\')"><i data-lucide="package"></i>Ir ao catálogo</button>')+'</div>');
+  }
+  var rows=S.cart.map(function(ci){ return {ci:ci,p:P(ci.sku)}; });
+  var supIds=[];
+  rows.forEach(function(r){ if(r.ci.sup && supIds.indexOf(r.ci.sup)<0){ supIds.push(r.ci.sup); } });
+  return appShell('quoteNew','Nova cotação',rows.length+' item(ns) · '+fmtN(rows.reduce(function(a,r){ return a+r.ci.qty; },0))+' unidade(s)',
+    pageHead([{label:'Dashboard',screen:'dashB'},{label:'Carrinho',screen:'cart'},{label:'Revisão da cotação'}],'Revisar e enviar cotação',
+      'Confira os itens, os fornecedores escolhidos e as condições de entrega antes do envio.',
+      null,'US-005','Eu como comprador, preciso revisar e enviar minha solicitação, para receber propostas dos fornecedores que escolhi.')
+    +'<div class="cartgrid"><div class="panel">'
+    +'<div class="p-pad" style="padding-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">'
+    +'<div><h3 style="font-size:15.5px;color:var(--navy)">Solicitante</h3><div style="font-size:13.5px;color:var(--mut);margin-top:3px">'+esc(S.user.name)+' · '+S.user.type+' · '+esc(S.user.city)+'</div></div>'
+    +'<span class="sku">Gerada em '+nowDT()+'</span></div>'
+    +'<div class="tblwrap"><table class="tbl"><thead><tr><th>Produto</th><th>Código</th><th>Fornecedor escolhido</th><th class="rgt">Quantidade</th><th>Unidade</th></tr></thead><tbody>'
+    +rows.map(function(r){
+      return '<tr><td><b>'+r.p.name+'</b></td><td class="sku">'+r.p.sku+'</td>'
+        +'<td style="font-size:13px">'+(r.ci.sup && SUPPLIERS[r.ci.sup]?'<b style="color:var(--blue-d)">'+esc(SUPPLIERS[r.ci.sup].short)+'</b>':'—')+'</td>'
+        +'<td class="rgt num"><b>'+fmtN(r.ci.qty)+'</b></td>'
+        +'<td style="font-size:13px;color:var(--mut)">'+r.p.unit+'</td></tr>';
+    }).join('')
+    +'</tbody></table></div></div>'
+    +'<div class="sticky-side"><div class="panel p-pad">'
+    +'<h3 style="font-size:16px;margin-bottom:14px;color:var(--navy)">Condições da solicitação</h3>'
+    +'<div class="fld"><label>Prazo desejado para resposta</label><select class="sel" id="q-deadline">'
+    +'<option value="24h" selected>24 horas (padrão)</option><option value="3d">3 dias</option><option value="5d">5 dias</option>'
+    +'</select></div>'
+    +'<div class="fld"><label>Local de entrega</label><select class="sel" id="q-deliv">'
+    +'<option selected>'+esc(S.user.addr)+' — '+esc(S.user.city)+'</option>'
+    +'<option>Outro local (informar nas observações)</option>'
+    +'</select></div>'
+    +'<div class="fld"><label>Informações adicionais para o fornecedor</label>'
+    +'<textarea class="txa" id="q-obs" placeholder="Ex.: aceito entregas parciais, necessidade de embalagem específica…"></textarea></div>'
+    +'<div class="fld" style="margin-top:16px"><label>Fornecedores que serão notificados</label>'
+    +supIds.map(function(s){ return '<div class="chkline" style="cursor:default"><i data-lucide="check-circle-2" style="width:15px;height:15px;color:var(--ok)"></i><span style="font-weight:500">'+SUPPLIERS[s].short+'</span></div>'; }).join('')
+    +'<div style="margin:8px 0 4px">'+RN()+'</div>'
+    +'<div class="hint">Conforme a sua escolha em cada item. A distribuição automática por categoria (produto → categoria → fornecedor) é uma regra de negócio a definir.</div></div>'
+    +'<hr class="sep">'
+    +'<button class="btn btn-p blk btn-lg" onclick="askSendQuote()"><i data-lucide="send"></i>Enviar Cotação</button>'
+    +'</div></div></div>');
+}
+function askSendQuote(){
+  var supIds=[];
+  S.cart.forEach(function(ci){ if(ci.sup && supIds.indexOf(ci.sup)<0){ supIds.push(ci.sup); } });
+  confirmModal({title:'Enviar esta cotação para os fornecedores selecionados?',
+    body:'<p style="font-size:14px;color:var(--mut);margin-bottom:14px">Cada item será enviado ao fornecedor que você escolheu. Serão notificados <b style="color:var(--ink)">'+supIds.length+' fornecedor(es)</b>: '
+      +supIds.map(function(s){ return SUPPLIERS[s].short; }).join(', ')+'.</p>'
+      +'<div class="note"><i data-lucide="mail"></i><div>Cada fornecedor receberá um e-mail apenas com os itens direcionados a ele (simulado neste protótipo).</div></div>',
+    okLabel:'<i data-lucide="send"></i>Confirmar envio',onOk:sendQuoteNow});
+}
+function sendQuoteNow(){
+  run('Registrando cotação e notificando fornecedores…',1000,function(){
+    var supIds=[];
+    S.cart.forEach(function(ci){ if(ci.sup && supIds.indexOf(ci.sup)<0){ supIds.push(ci.sup); } });
+    var obsEl=$('q-obs'),delEl=$('q-deliv'),dlEl=$('q-deadline');
+    var q={id:'COT-000'+S.seq.q++,date:nowDT(),buyer:BUYER_COMPANY,buyerShort:BUYER_SHORT,status:'aguardando',
+      items:S.cart.map(function(ci){ return {sku:ci.sku,qty:ci.qty,sup:ci.sup}; }),
+      obs:obsEl?obsEl.value.trim():'',
+      delivery:delEl?delEl.value:esc(S.user.addr),
+      deadline:dlEl?dlEl.value:'24h',notified:supIds,proposals:[]};
+    S.quotes.push(q); S.lastSent=q.id; S.cart=[];
+    if(supIds.indexOf(DEMO_SUP)>-1){
+      var meus=itemsForSup(q,DEMO_SUP).length;
+      notif('supplier','Nova cotação recebida',q.id+' · '+BUYER_SHORT+' — '+meus+' item(ns) direcionado(s) à sua empresa. Responder em até '+q.deadline+'.','file-text');
+    }
+    go('quoteSent');
+  });
+}
+function viewQuoteSent(){
+  var q=getQuote(S.lastSent);
+  if(!q){ S.screen='dashB'; return viewDashB(); }
+  var cd=countdownInfo();
+  return appShell('quotes','Cotação enviada',q.id,
+    '<div class="uslab">US-005 · Confirmação de envio</div>'
+    +'<div class="done-wrap"><div class="panel p-pad center">'
+    +'<div class="done-ic"><i data-lucide="check"></i></div>'
+    +'<h2 style="font-size:22px;color:var(--navy)">Solicitação de cotação enviada</h2>'
+    +'<p style="color:var(--mut);margin:8px 0 4px">Os fornecedores que você escolheu foram notificados e têm o prazo abaixo para responder.</p>'
+    +'<div class="mono" style="font-family:Sora,sans-serif;font-size:24px;font-weight:700;margin:12px 0 2px;color:var(--blue-d)">'+q.id+'</div>'
+    +'<div class="meta-grid" style="text-align:left">'
+    +'<div class="mg"><small>Data / hora do envio</small><b>'+q.date+'</b></div>'
+    +'<div class="mg"><small>Itens na solicitação</small><b>'+q.items.length+' produto(s)</b></div>'
+    +'<div class="mg"><small>Fornecedores notificados</small><b style="font-size:13px">'+q.notified.map(function(s){ return SUPPLIERS[s].short; }).join(' · ')+'</b></div>'
+    +'<div class="mg"><small>Prazo para resposta</small><b>Resposta esperada em até '+(q.deadline==='24h'?'24 horas':q.deadline)+'</b></div>'
+    +'</div>'
+    +'<div class="note" style="text-align:left"><i data-lucide="clock"></i><div><b>'+cd.rest+' restantes</b> para os fornecedores responderem (expira em '+cd.when+') — simulação visual, sem cronômetro real.</div></div>'
+    +'<hr class="sep">'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">'
+    +'<button class="btn btn-s" onclick="openEmailPreview(\''+q.id+'\')"><i data-lucide="mail"></i>Prévia do e-mail enviado</button>'
+    +'<button class="btn btn-p" onclick="go(\'quotes\')"><i data-lucide="clipboard-list"></i>Ir para Minhas Cotações</button>'
+    +'</div></div></div>');
+}
+function openEmailPreview(qid){
+  var q=getQuote(qid); if(!q){ return; }
+  var toDemo=q.notified.indexOf(DEMO_SUP)>-1;
+  var destSup=toDemo?DEMO_SUP:(q.notified.find(function(s){ return s!==DEMO_SUP; })||null);
+  var rows=itemsForSup(q,destSup).map(function(it){
+    var p=P(it.sku);
+    return '<tr><td><b>'+p.name+'</b></td><td class="mono" style="font-size:12px">'+it.sku+'</td><td style="text-align:right"><b>'+fmtN(it.qty)+'</b></td><td>'+p.unit+'</td></tr>';
+  }).join('') || q.items.map(function(it){
+    var p=P(it.sku);
+    return '<tr><td><b>'+p.name+'</b></td><td class="mono" style="font-size:12px">'+it.sku+'</td><td style="text-align:right"><b>'+fmtN(it.qty)+'</b></td><td>'+p.unit+'</td></tr>';
+  }).join('');
+  modal('<div class="m-head"><h3>Prévia do e-mail enviado</h3><button class="m-x" onclick="closeModal()" aria-label="Fechar"><i data-lucide="x"></i></button></div>'
+    +'<div class="m-body" style="padding-top:12px"><div class="mail">'
+    +'<div class="mail-h">'
+    +'<div class="mr"><small>De</small><span><b>Dushell Cotações</b> &lt;cotacoes@dushell.com.br&gt;</span></div>'
+    +'<div class="mr"><small>Para</small><span>'+(toDemo?'comercial@cavalodeferro.com.br':'comercial@fornecedor-parceiro.com.br')+'</span></div>'
+    +'<div class="mr"><small>Assunto</small><span><b>[Dushell] Nova solicitação de cotação '+q.id+' — '+q.buyerShort+'</b></span></div>'
+    +'</div>'
+    +'<div class="mail-b">'
+    +'<p>Olá, parceiro(a).</p>'
+    +'<p style="color:var(--mut);font-size:13.5px;margin-top:6px">O comprador <b>'+esc(q.buyer)+'</b> enviou uma solicitação de cotação através da plataforma Dushell. Os itens direcionados à sua empresa estão abaixo:</p>'
+    +'<table><thead><tr><th>Produto</th><th>Código</th><th style="text-align:right">Qtde</th><th>Unidade</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<div style="font-size:13px;color:var(--mut);display:grid;gap:4px">'
+    +'<span><b style="color:var(--ink)">Prazo para resposta:</b> até '+(q.deadline==='24h'?'24 horas':q.deadline)+'</span>'
+    +'<span><b style="color:var(--ink)">Local de entrega:</b> '+esc(q.delivery)+'</span>'
+    +(q.obs?'<span><b style="color:var(--ink)">Observações:</b> '+esc(q.obs)+'</span>':'')
+    +'</div>'
+    +'<div style="margin-top:18px;display:flex;justify-content:center">'
+    +'<button class="btn btn-p" onclick="emailGoSupplier(\''+q.id+'\')"><i data-lucide="file-text"></i>Responder Cotação</button>'
+    +'</div></div></div>'
+    +'<div class="hint" style="margin-top:12px;text-align:center">Prévia ilustrativa — o envio real de e-mails acontece na Etapa 3 (Comunicação).</div>'
+    +'</div>',true);
+}
+function emailGoSupplier(qid){
+  closeModal();
+  enterDemo('supplier');
+  toast('Contexto alterado: você agora vê a plataforma como o fornecedor (demo).','warn');
+  go('quoteResp',qid);
+}
+
+/* ---------- minhas cotações ---------- */
+function viewQuotes(){
+  var mine=myQuotes();
+  var chipsArr=[['todas','Todas'],['aguardando','Aguardando'],['parcial','Parciais'],['respondida','Respondidas'],['aprovada','Aprovadas'],['expirada','Expiradas'],['recusada','Recusadas']];
+  var count=function(st){ return st==='todas'?mine.length:mine.filter(function(q){ return q.status===st; }).length; };
+  var list=S.qf==='todas'?mine:mine.filter(function(q){ return q.status===S.qf; });
+  var table;
+  if(!mine.length){
+    table='<div class="panel">'+emptyBox('file-text','Você ainda não possui cotações','Adicione produtos ao carrinho e envie sua primeira solicitação.',
+      '<button class="btn btn-p" onclick="go(\'catalog\')"><i data-lucide="package"></i>Ver produtos</button>')+'</div>';
+  } else if(!list.length){
+    table='<div class="panel">'+emptyBox('filter','Nenhuma cotação neste filtro','Tente outro status acima.')+'</div>';
+  } else {
+    table='<div class="panel tblwrap"><table class="tbl">'
+      +'<thead><tr><th>Cotação</th><th>Data</th><th class="rgt">Itens</th><th>Fornecedores escolhidos</th><th>Status</th></tr></thead><tbody>'
+      +list.map(function(q){
+        return '<tr class="rowc st-'+q.status+'" onclick="go(\'quoteDetail\',\''+q.id+'\')">'
+          +'<td><b class="mono" style="font-size:13px">'+q.id+'</b></td>'
+          +'<td style="font-size:13px;color:var(--mut)">'+q.date+'</td>'
+          +'<td class="rgt num">'+q.items.length+'</td>'
+          +'<td style="font-size:12.5px;color:var(--mut);max-width:230px">'+q.notified.map(function(s){ return SUPPLIERS[s].short; }).join(', ')+'</td>'
+          +'<td>'+badge(q.status,QSTATUS)+'</td></tr>';
+      }).join('')
+      +'</tbody></table></div>';
+  }
+  return appShell('quotes','Minhas Cotações',mine.length+' cotação(ões) no histórico',
+    pageHead([{label:'Dashboard',screen:'dashB'},{label:'Minhas cotações'}],'Minhas cotações',
+      'Acompanhe o andamento de cada solicitação e as respostas dos fornecedores que você escolheu.',
+      '<button class="btn btn-p" onclick="go(\'quoteNew\')"><i data-lucide="plus"></i>Nova cotação</button>',
+      'US-006','Eu como comprador, preciso acompanhar minhas cotações, para saber quais fornecedores já responderam.')
+    +'<div class="chips">'+chipsArr.map(function(c){
+      return '<label class="chip"><input type="radio" name="qf" value="'+c[0]+'"'+(S.qf===c[0]?' checked':'')+' onchange="setQF(this.value)"><span>'+c[1]+' ('+count(c[0])+')</span></label>';
+    }).join('')+'</div>'+table);
+}
+
+/* ---------- detalhe da cotação ---------- */
+function viewQuoteDetail(){
+  var q=getQuote(S.qid);
+  if(!q){ S.screen='quotes'; return viewQuotes(); }
+  var cd=countdownInfo();
+  var answered=q.proposals.filter(function(p){ return !p.refused; }).length;
+  var head=pageHead([{label:'Dashboard',screen:'dashB'},{label:'Minhas cotações',screen:'quotes'},{label:q.id}],'Cotação '+q.id,
+    'Solicitada em '+q.date+' · Entrega: '+esc(q.delivery),
+    (answered>0 && !q._winner)?'<button class="btn btn-p" onclick="go(\'compare\',\''+q.id+'\')"><i data-lucide="scale"></i>Comparar propostas ('+answered+')</button>':'',
+    'US-006','Eu como comprador, preciso acompanhar o status da cotação, para saber se os fornecedores responderam.');
+  var itemsPanel='<div class="panel">'
+    +'<div class="p-pad" style="padding-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">'
+    +'<h3 style="font-size:15.5px;color:var(--navy)">Itens solicitados</h3>'+badge(q.status,QSTATUS)+'</div>'
+    +'<div class="tblwrap"><table class="tbl"><thead><tr><th>Produto</th><th>Código</th><th>Fornecedor</th><th class="rgt">Qtde</th><th>Unidade</th></tr></thead><tbody>'
+    +q.items.map(function(it){
+      var p=P(it.sku);
+      return '<tr><td><b>'+p.name+'</b></td><td class="sku">'+it.sku+'</td>'
+        +'<td style="font-size:12.5px">'+(it.sup && SUPPLIERS[it.sup]?'<b style="color:var(--blue-d)">'+esc(SUPPLIERS[it.sup].short)+'</b>':'—')+'</td>'
+        +'<td class="rgt num"><b>'+fmtN(it.qty)+'</b></td><td style="font-size:13px;color:var(--mut)">'+p.unit+'</td></tr>';
+    }).join('')
+    +'</tbody></table></div>'
+    +(q.obs?'<div class="p-pad" style="padding-top:10px;font-size:13px;color:var(--mut)"><b style="color:var(--ink)">Observações:</b> '+esc(q.obs)+'</div>':'')
+    +'</div>';
+  var propSection;
+  if(q.status==='expirada'){
+    propSection='<div class="panel" style="margin-top:22px">'+emptyBox('timer-off','Esta cotação expirou','Nenhum fornecedor respondeu dentro do prazo de '+(q.deadline==='24h'?'24 horas':q.deadline)+'. Você pode montar uma nova solicitação com os mesmos itens.',
+      '<button class="btn btn-s" onclick="go(\'catalog\')"><i data-lucide="refresh-cw"></i>Montar nova cotação</button>')+'</div>';
+  } else if(q._winner){
+    propSection='<div class="panel p-pad" style="margin-top:22px;border-color:#CBE5D4">'
+      +'<div style="display:flex;gap:13px;align-items:center;flex-wrap:wrap">'
+      +'<div class="done-ic" style="width:46px;height:46px;margin:0"><i data-lucide="badge-check"></i></div>'
+      +'<div><b style="font-size:15px;color:var(--navy)">Proposta selecionada: '+SUPPLIERS[q._winner].short+'</b>'
+      +'<div style="font-size:13px;color:var(--mut)">Um pedido foi gerado a partir desta cotação.</div></div>'
+      +'<button class="btn btn-p btn-sm" style="margin-left:auto" onclick="go(\'ordersB\')"><i data-lucide="truck"></i>Ver pedido</button>'
+      +'</div></div>';
+  } else if(answered>0){
+    propSection='<h3 style="font-size:16.5px;margin:22px 0 12px;color:var(--navy)">Propostas recebidas ('+answered+' de '+q.notified.length+')</h3>'
+      +q.proposals.filter(function(p){ return !p.refused; }).map(function(pr){
+        return '<div class="panel p-pad" style="margin-bottom:12px">'
+          +'<div style="display:flex;gap:13px;align-items:flex-start;flex-wrap:wrap">'
+          +'<div class="avat" style="background:var(--navy);border-radius:10px">'+SUPPLIERS[pr.sup].ini+'</div>'
+          +'<div style="flex:1;min-width:220px">'
+          +'<b style="font-size:15px;color:var(--navy)">'+SUPPLIERS[pr.sup].short+'</b>'
+          +'<div style="font-size:12.5px;color:var(--mut)">'+SUPPLIERS[pr.sup].name+' · '+SUPPLIERS[pr.sup].city+' · enviada em '+pr.sentAt+'</div>'
+          +'<div style="font-size:13px;color:var(--mut);margin-top:8px">Cobre <b style="color:var(--ink)">'+propCovered(q,pr)+' de '+itemsForSup(q,pr.sup).length+'</b> itens direcionados · prazo de até <b style="color:var(--ink)">'+propMaxTerm(pr)+' dias</b> · total <b class="mono" style="color:var(--blue-d)">'+money(propTotal(q,pr))+'</b></div>'
+          +'</div>'
+          +'<button class="btn btn-s btn-sm" onclick="go(\'compare\',\''+q.id+'\')"><i data-lucide="eye"></i>Ver detalhes</button>'
+          +'</div></div>';
+      }).join('');
+    if(answered<q.notified.length){
+      propSection+='<div class="note warnn" style="margin-top:6px"><i data-lucide="hourglass"></i><div>Alguns fornecedores ainda não responderam. Você já pode comparar o que recebeu e decidir — ou aguardar o prazo.</div></div>';
+    }
+  } else {
+    propSection='<div class="panel p-pad" style="margin-top:22px">'
+      +'<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">'
+      +'<div class="done-ic" style="width:46px;height:46px;margin:0;background:var(--warn-t);color:var(--warn)"><i data-lucide="hourglass"></i></div>'
+      +'<div><b style="font-size:15px;color:var(--navy)">Aguardando resposta dos fornecedores</b>'
+      +'<div style="font-size:13px;color:var(--mut)">Tempo restante para resposta: <b class="mono" style="color:var(--ink)">'+cd.rest+'</b> · expira em '+cd.when+'</div>'
+      +'<div style="margin-top:6px">'+FUT('Simulação visual — sem cronômetro real')+'</div></div>'
+      +'</div></div>';
+  }
+  var side='<div class="sticky-side"><div class="panel p-pad">'
+    +'<h3 style="font-size:16px;margin-bottom:12px;color:var(--navy)">Resumo</h3>'
+    +'<div class="sumrow"><span>Itens</span><b>'+q.items.length+'</b></div>'
+    +'<div class="sumrow"><span>Fornecedores notificados</span><b>'+q.notified.length+'</b></div>'
+    +'<div class="sumrow"><span>Propostas recebidas</span><b>'+answered+'</b></div>'
+    +'<div class="sumrow"><span>Prazo dado</span><b>'+(q.deadline==='24h'?'24 horas':q.deadline)+'</b></div>'
+    +'<hr class="sep">'
+    +'<div class="note"><i data-lucide="info"></i><div>O valor e as condições finais vêm das propostas — a Dushell não fixa preço no catálogo. '+RN()+'</div></div>'
+    +'</div></div>';
+  return appShell('quotes','Cotação '+q.id,QSTATUS[q.status].l+' · '+q.items.length+' item(ns)',
+    head+'<div class="cartgrid"><div>'+itemsPanel+propSection+'</div>'+side+'</div>');
+}
+
+/* ---------- comparação ---------- */
+function viewCompare(){
+  var q=getQuote(S.qid);
+  if(!q){ S.screen='quotes'; return viewQuotes(); }
+  var props={};
+  q.notified.forEach(function(sid){
+    props[sid]=q.proposals.find(function(p){ return p.sup===sid && !p.refused; })||null;
+  });
+  var answered=q.notified.filter(function(sid){ return props[sid]; }).length;
+  var headCells=q.notified.map(function(sid){
+    var pr=props[sid];
+    var sub=pr?'respondeu em '+pr.sentAt.slice(-5):(q.status==='expirada'?'sem resposta · expirada':'sem resposta ainda');
+    var win=q._winner===sid?'<span class="bdg st-mint" style="margin-left:auto"><i data-lucide="badge-check"></i>Selecionada</span>':'';
+    return '<th style="min-width:210px;vertical-align:top"><div class="cmp-sup">'
+      +'<div class="sav">'+SUPPLIERS[sid].ini+'</div>'
+      +'<div><b>'+SUPPLIERS[sid].short+'</b><span>'+sub+'</span></div>'+win+'</div></th>';
+  }).join('');
+  var bodyRows=q.items.map(function(it){
+    var p=P(it.sku);
+    var cells=q.notified.map(function(sid){
+      if(it.sup && it.sup!==sid){
+        return '<td class="cmp-cell"><div class="cmp-na"><i data-lucide="corner-down-right"></i>Direcionado a '+esc(SUPPLIERS[it.sup].short)+'</div></td>';
+      }
+      var pr=props[sid];
+      if(!pr){
+        return '<td class="cmp-cell"><div class="cmp-na"><i data-lucide="'+(q.status==='expirada'?'timer-off':'hourglass')+'"></i>'
+          +(q.status==='expirada'?'Expirou sem resposta':'Sem resposta ainda')+'</div></td>';
+      }
+      var l=pr.lines[it.sku];
+      if(!l){ return '<td class="cmp-cell"><div class="cmp-na na-err"><i data-lucide="circle-slash"></i>Item não ofertado</div></td>'; }
+      return '<td class="cmp-cell"><div class="pu">'+money(l.price)+' <span style="font-size:11px;color:var(--soft);font-weight:400">/ un.</span></div>'
+        +'<div class="ex">Subtotal: <b class="mono" style="color:var(--ink)">'+money(l.price*it.qty)+'</b><br>Prazo: '+l.term+' dia(s) após confirmação</div>'
+        +(l.note?'<div class="nt">'+esc(l.note)+'</div>':'')+'</td>';
+    }).join('');
+    return '<tr><td><b style="font-size:13.5px;color:var(--navy)">'+p.name+'</b><div class="sku">'+it.sku+' · '+p.unit+'</div>'
+      +'<div style="font-size:12.5px;color:var(--mut);margin-top:3px">Solicitado: <b style="color:var(--ink)">'+fmtN(it.qty)+'</b>'
+      +(it.sup?' · para '+esc(SUPPLIERS[it.sup].short):'')+'</div></td>'+cells+'</tr>';
+  }).join('');
+  var totalRow='<tr style="background:#F7F9FD"><td style="font-weight:700;color:var(--navy)">Total cotado</td>'
+    +q.notified.map(function(sid){
+      var pr=props[sid];
+      if(!pr){ return '<td><span style="font-size:12.5px;color:var(--soft)">—</span></td>'; }
+      return '<td><div class="cmp-total">'+money(propTotal(q,pr))+'</div>'
+        +'<div style="font-size:12px;color:var(--mut);margin-top:3px">cobre '+propCovered(q,pr)+' de '+itemsForSup(q,sid).length+' itens direcionados · até '+propMaxTerm(pr)+' dias</div>'
+        +'<div style="font-size:12px;color:var(--mut);margin-top:6px"><b style="color:var(--ink)">Condições:</b> '+esc(pr.conditions)+'</div>'
+        +'<div style="margin-top:6px">'+RN()+'</div></td>';
+    }).join('')+'</tr>';
+  var actions;
+  if(q._winner){
+    actions='<div class="note" style="margin-top:18px"><i data-lucide="badge-check"></i><div>Proposta de <b>'+SUPPLIERS[q._winner].short+'</b> selecionada. Um pedido foi gerado — veja em <a style="color:var(--blue);font-weight:600" onclick="go(\'ordersB\')">Meus Pedidos</a>.</div></div>';
+  } else if(answered>0){
+    actions='<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:18px">'
+      +q.notified.filter(function(sid){ return props[sid]; }).map(function(sid){
+        return '<button class="btn btn-p" onclick="askSelectProposal(\''+q.id+'\',\''+sid+'\')"><i data-lucide="badge-check"></i>Selecionar proposta — '+SUPPLIERS[sid].short+'</button>';
+      }).join('')
+      +'<button class="btn btn-s" onclick="go(\'quoteDetail\',\''+q.id+'\')">Voltar ao detalhe</button></div>';
+  } else {
+    actions='<div style="margin-top:18px"><button class="btn btn-s" onclick="go(\'quoteDetail\',\''+q.id+'\')"><i data-lucide="arrow-left"></i>Voltar ao detalhe da cotação</button></div>';
+  }
+  return appShell('quotes','Comparação de propostas',q.id+' · '+answered+' de '+q.notified.length+' proposta(s)',
+    pageHead([{label:'Minhas cotações',screen:'quotes'},{label:q.id,screen:'quoteDetail',id:q.id},{label:'Comparação'}],'Comparar propostas',
+      'Analise preço, prazo, disponibilidade e condições apresentados por cada fornecedor. A escolha é sua — a Dushell não indica um vencedor.',
+      null,'US-007','Eu como comprador, preciso comparar as propostas recebidas, para analisar as condições antes de escolher.')
+    +'<div class="panel tblwrap"><table class="tbl"><thead><tr><th style="min-width:230px">Item solicitado</th>'+headCells+'</tr></thead>'
+    +'<tbody>'+bodyRows+totalRow+'</tbody></table></div>'
+    +actions
+    +'<div class="note" style="margin-top:16px"><i data-lucide="info"></i><div>Frete, impostos e condições finais integram a negociação comercial e seguem <b>regras de negócio a definir</b> pela Dushell.</div></div>');
+}
+function askSelectProposal(qid,sid){
+  var q=getQuote(qid); if(!q){ return; }
+  var pr=q.proposals.find(function(p){ return p.sup===sid && !p.refused; }); if(!pr){ return; }
+  confirmModal({title:'Você deseja selecionar esta proposta?',
+    body:'<div class="meta-grid" style="margin:0 0 14px">'
+      +'<div class="mg"><small>Fornecedor</small><b>'+SUPPLIERS[sid].short+'</b></div>'
+      +'<div class="mg"><small>Valor cotado</small><b class="mono">'+money(propTotal(q,pr))+'</b></div>'
+      +'<div class="mg"><small>Prazo de entrega</small><b>até '+propMaxTerm(pr)+' dias</b></div>'
+      +'<div class="mg"><small>Itens cobertos</small><b>'+propCovered(q,pr)+' de '+itemsForSup(q,sid).length+' direcionados</b></div></div>'
+      +'<div class="note"><i data-lucide="info"></i><div>Após a seleção, o pedido é gerado para processamento. A etapa de <b>pagamento é futura</b> — regra de negócio a definir.</div></div>',
+    okLabel:'<i data-lucide="badge-check"></i>Selecionar proposta',
+    onOk:function(){ selectProposal(q,sid); }});
+}
+function selectProposal(q,sid){
+  var pr=q.proposals.find(function(p){ return p.sup===sid && !p.refused; }); if(!pr){ return; }
+  run('Gerando pedido a partir da proposta selecionada…',850,function(){
+    q._winner=sid; q.status='aprovada';
+    var items=[],total=0;
+    q.items.forEach(function(it){
+      if(itemForSup(it,sid)){ var l=pr.lines[it.sku]; if(l){ items.push({sku:it.sku,qty:it.qty}); total+=l.price*it.qty; } }
+    });
+    var o={id:'PED-000'+S.seq.p++,date:todayBR(),quote:q.id,sup:sid,buyer:q.buyer,buyerShort:q.buyerShort,items:items,total:total,status:'ag-pag'};
+    S.orders.unshift(o); S.lastOrder=o.id;
+    notif('buyer','Pedido gerado',o.id+' criado a partir da cotação '+q.id+' — proposta de '+SUPPLIERS[sid].short+'.','truck');
+    if(sid===DEMO_SUP){ notif('supplier','Proposta aceita','Sua proposta na cotação '+q.id+' foi selecionada por '+q.buyerShort+'. Pedido '+o.id+' gerado.','badge-check'); }
+    go('orderCreated');
+  });
+}
+function viewOrderCreated(){
+  var o=S.orders.find(function(x){ return x.id===S.lastOrder; });
+  if(!o){ S.screen='dashB'; return viewDashB(); }
+  var flow=[['Seleção da proposta',true],['Confirmação do pedido',true],['Forma de pagamento',false],['Pagamento',false],['Pedido finalizado',false],['Envio ao fornecedor',false]];
+  return appShell('ordersB','Pedido gerado',o.id,
+    '<div class="uslab">US-008 · Seleção de proposta → pedido</div>'
+    +'<div class="done-wrap"><div class="panel p-pad center">'
+    +'<div class="done-ic"><i data-lucide="badge-check"></i></div>'
+    +'<h2 style="font-size:22px;color:var(--navy)">Proposta selecionada — pedido gerado</h2>'
+    +'<div class="mono" style="font-family:Sora,sans-serif;font-size:24px;font-weight:700;margin:12px 0 2px;color:var(--blue-d)">'+o.id+'</div>'
+    +'<p style="color:var(--mut);font-size:13.5px">Originado da cotação <b class="mono">'+o.quote+'</b> · fornecedor <b>'+SUPPLIERS[o.sup].short+'</b></p>'
+    +'<div class="meta-grid" style="text-align:left">'
+    +'<div class="mg"><small>Itens do pedido</small><b>'+o.items.length+' produto(s)</b></div>'
+    +'<div class="mg"><small>Valor cotado</small><b class="mono">'+money(o.total)+'</b></div>'
+    +'</div>'
+    +'<div class="timeline" style="text-align:left;max-width:400px;margin:0 auto">'
+    +flow.map(function(f){
+      return '<div class="tl-i '+(f[1]?'done cur':'')+'"><b>'+f[0]+'</b><span>'+(f[1]?'Concluído neste protótipo.':'Etapa futura — exige gateway e regras financeiras.')+'</span></div>';
+    }).join('')
+    +'</div>'
+    +'<div style="margin:12px 0 4px">'+FUT('Pagamento: próxima etapa / roadmap')+'</div>'
+    +'<div class="note warnn" style="text-align:left;margin-top:12px"><i data-lucide="info"></i><div>Formas de pagamento, quem paga a quem e eventual comissão da Dushell são decisões comerciais em aberto. '+RN()+'</div></div>'
+    +'<hr class="sep">'
+    +'<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'
+    +'<button class="btn btn-p" onclick="go(\'ordersB\')"><i data-lucide="truck"></i>Ver Meus Pedidos</button>'
+    +'<button class="btn btn-s" onclick="go(\'catalog\')"><i data-lucide="package"></i>Nova compra</button>'
+    +'</div></div></div>');
+}
+
+/* ---------- pedidos do comprador ---------- */
+function viewOrdersB(){
+  var mine=S.orders.filter(function(o){ return o.buyer===BUYER_COMPANY; });
+  var table=!mine.length
+    ? '<div class="panel">'+emptyBox('truck','Você ainda não possui pedidos','Pedidos são criados quando você seleciona uma proposta em suas cotações.')+'</div>'
+    : '<div class="panel tblwrap"><table class="tbl">'
+      +'<thead><tr><th>Pedido</th><th>Data</th><th>Cotação origem</th><th>Fornecedor</th><th class="rgt">Itens</th><th class="rgt">Valor</th><th>Status</th><th></th></tr></thead><tbody>'
+      +mine.map(function(o){
+        return '<tr><td><b class="mono" style="font-size:13px;color:var(--navy)">'+o.id+'</b></td>'
+          +'<td style="font-size:13px;color:var(--mut)">'+o.date+'</td>'
+          +'<td class="sku">'+o.quote+'</td>'
+          +'<td style="font-size:13.5px">'+SUPPLIERS[o.sup].short+'</td>'
+          +'<td class="rgt num">'+o.items.length+'</td>'
+          +'<td class="rgt"><b class="mono" style="font-size:13px">'+money(o.total)+'</b></td>'
+          +'<td>'+badge(o.status,OST)+'</td>'
+          +'<td class="rgt">'+(o.status==='ag-pag'?'<button class="btn btn-d btn-sm" onclick="askCancelOrder(\''+o.id+'\')">Cancelar</button>':'')+'</td></tr>';
+      }).join('')
+      +'</tbody></table></div>'
+      +'<div class="note" style="margin-top:16px"><i data-lucide="info"></i><div>Status como <b>pagamento confirmado</b>, <b>enviado</b> e <b>concluído</b> serão movimentados pelas etapas de comunicação e operação (roadmap). '+FUT()+'</div></div>';
+  return appShell('ordersB','Meus Pedidos',mine.length+' pedido(s)',
+    pageHead([{label:'Dashboard',screen:'dashB'},{label:'Meus pedidos'}],'Meus pedidos',
+      'Pedidos gerados a partir de propostas selecionadas. O fluxo financeiro e logístico completo entra nas próximas etapas do produto.',
+      null,'US-008','Eu como comprador, preciso acompanhar meus pedidos, para saber o andamento das compras efetivadas.')
+    +table);
+}
+function askCancelOrder(id){
+  confirmModal({title:'Tem certeza que deseja cancelar este pedido?',
+    body:'<p style="font-size:14px;color:var(--mut)">O pedido <b class="mono" style="color:var(--ink)">'+id+'</b> será cancelado e o fornecedor será notificado. Regras de cancelamento: regra de negócio a definir.</p>',
+    okLabel:'<i data-lucide="x-circle"></i>Cancelar pedido',danger:true,
+    onOk:function(){
+      var o=S.orders.find(function(x){ return x.id===id; });
+      if(o){ o.status='cancel'; }
+      toast('Pedido cancelado (simulação).','warn'); render();
+    }});
+}
+
+/* ---------- perfil do comprador ---------- */
+function viewProfileB(){
+  var u=S.user;
+  var pjForm='<div class="grid2">'+fld('razao','Razão social',true)+fld('fantasia','Nome fantasia',false)+'</div>'
+    +'<div class="grid3">'+fld('cnpj','CNPJ',true,'text','',' data-doc="cnpj" autocomplete="off"')+fld('ie','Inscrição estadual',false)+fld('rcargo','Cargo do responsável',true)+'</div>';
+  var pfForm='<div class="grid3">'+fld('nome','Nome completo',true)+fld('cpf','CPF',true,'text','',' data-doc="cpf" autocomplete="off"')+fld('nasc','Data de nascimento',true,'date')+'</div>';
+  return appShell('profileB','Meu Perfil',esc(u.name),
+    pageHead([{label:'Dashboard',screen:'dashB'},{label:'Meu perfil'}],'Meu Perfil',
+      'Dados utilizados nas cotações e pedidos. No sistema real, alterações passam por validação (Etapa 2).',
+      null,'US-002','Eu como comprador, preciso manter meus dados atualizados, para que cotações e pedidos usem informações corretas.')
+    +'<div class="dashgrid"><div>'
+    +'<div class="panel p-pad" style="margin-bottom:18px">'
+    +'<div class="ph"><h3>'+(u.type==='PJ'?'Dados da empresa':'Dados pessoais')+'</h3><span class="bdg st-mint"><i data-lucide="badge-check"></i>Conta ativa</span></div>'
+    +'<form onsubmit="event.preventDefault();saveProfileDemo()" novalidate>'+(u.type==='PJ'?pjForm:pfForm)
+    +'<button class="btn btn-p btn-sm" type="submit"><i data-lucide="check"></i>Salvar alterações</button></form></div>'
+    +'<div class="panel p-pad" style="margin-bottom:18px">'
+    +'<div class="ph"><h3>Contato</h3></div>'
+    +'<form onsubmit="event.preventDefault();saveProfileDemo()" novalidate>'
+    +'<div class="grid3">'+fld('email','E-mail',true)+fld('tel','Telefone',true)+fld('whats','WhatsApp',false)+'</div>'
+    +'<button class="btn btn-p btn-sm" type="submit"><i data-lucide="check"></i>Salvar alterações</button></form></div>'
+    +'<div class="panel p-pad">'
+    +'<div class="ph"><h3>Endereço</h3></div>'
+    +'<form onsubmit="event.preventDefault();saveProfileDemo()" novalidate>'
+    +'<div class="grid3">'+fld('cep','CEP',true)+selFld('uf','Estado',UF_LIST,true)+fld('cidade','Cidade',true)+'</div>'
+    +'<div class="grid2">'+fld('addr','Logradouro e número',true)+fld('compl','Complemento',false)+'</div>'
+    +'<button class="btn btn-p btn-sm" type="submit"><i data-lucide="check"></i>Salvar alterações</button></form></div>'
+    +'</div>'
+    +'<div class="sticky-side"><div class="panel p-pad">'
+    +'<div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">'
+    +'<div class="avat" style="width:44px;height:44px;font-size:16px">'+u.ini+'</div>'
+    +'<div><b style="font-size:15px;color:var(--navy)">'+esc(u.name)+'</b><div style="font-size:12.5px;color:var(--mut)">'+u.type+' · '+esc(u.city)+'</div></div></div>'
+    +'<hr class="sep">'
+    +'<div class="sumrow"><span>Perfil</span><b>Comprador '+u.type+'</b></div>'
+    +'<div class="sumrow"><span>Cotações</span><b>'+myQuotes().length+'</b></div>'
+    +'<div class="sumrow"><span>Pedidos</span><b>'+S.orders.filter(function(o){ return o.buyer===BUYER_COMPANY; }).length+'</b></div>'
+    +'<hr class="sep">'
+    +'<div class="note"><i data-lucide="info"></i><div>Responsável pela conta: <b>'+esc(u.resp)+'</b>. Dados de acesso são gerenciados na Etapa 2 (autenticação real).</div></div>'
+    +'</div></div></div>');
+}
+function saveProfileDemo(){ toast('Alterações salvas (simulação — sem persistência real).'); render(); }
+
+/* ================================================================
+   FORNECEDOR
+   ================================================================ */
+function viewDashS(){
+  var qs=supQuotes();
+  var novas=qs.filter(function(q){ return q.status!=='expirada' && !q.proposals.some(function(p){ return p.sup===DEMO_SUP; }); }).length;
+  var respondidas=qs.filter(function(q){ return q.proposals.some(function(p){ return p.sup===DEMO_SUP && !p.refused; }); }).length;
+  var agdec=qs.filter(function(q){ return q._winner!==DEMO_SUP && q.proposals.some(function(p){ return p.sup===DEMO_SUP && !p.refused; }); }).length;
+  var pedidos=S.orders.filter(function(o){ return o.sup===DEMO_SUP; });
+  var urg=qs.find(function(q){ return q.status!=='expirada' && !q.proposals.some(function(p){ return p.sup===DEMO_SUP; }); });
+  var cd=countdownInfo();
+  var alertHtml=urg
+    ? '<button class="qact" onclick="go(\'quoteResp\',\''+urg.id+'\')"><div class="qa-ic"><i data-lucide="bell"></i></div>'
+      +'<div><b>'+urg.id+' aguarda sua resposta</b>'
+      +'<span>'+urg.buyerShort+' · '+itemsForSup(urg,DEMO_SUP).length+' item(ns) direcionado(s) · expira hoje às 18:30 ('+cd.rest+' restantes — simulação)</span></div>'
+      +'<span class="btn btn-p btn-sm">Responder agora</span></button>'
+    : '';
+  return appShell('dashS','Dashboard','Visão geral das suas oportunidades e pedidos',
+    '<div class="dash-hi"><div><div class="uslab">US-010 · Painel do fornecedor</div><h1>'+SUPPLIERS[DEMO_SUP].short+'</h1>'
+    +'<div class="dt">'+new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})+' · Fornecedor parceiro aprovado · '+SUPPLIERS[DEMO_SUP].city+'</div></div>'
+    +'<button class="btn btn-p" onclick="go(\'quotesSup\')"><i data-lucide="file-text"></i>Ver cotações</button></div>'
+    +'<div class="story"><i data-lucide="clipboard-list"></i><span>Eu como fornecedor, preciso de uma visão geral das oportunidades e pedidos, para organizar meu dia a dia comercial.</span></div>'
+    +alertHtml
+    +'<div class="kstrip">'
+    +'<button class="kpi" onclick="go(\'quotesSup\')"><div class="kv">'+novas+'</div><div class="kl">Novas cotações recebidas</div></button>'
+    +'<button class="kpi" onclick="go(\'quotesSup\')"><div class="kv">'+agdec+'</div><div class="kl">Aguardando decisão do comprador</div></button>'
+    +'<button class="kpi" onclick="go(\'quotesSup\')"><div class="kv">'+respondidas+'</div><div class="kl">Cotações respondidas</div></button>'
+    +'<button class="kpi" onclick="go(\'ordersS\')"><div class="kv">'+pedidos.filter(function(o){ return o.status==='pag-ok'||o.status==='env-for'||o.status==='proc'; }).length+'</div><div class="kl">Pedidos em andamento</div></button>'
+    +'<button class="kpi" onclick="go(\'ordersS\')"><div class="kv">'+pedidos.filter(function(o){ return o.status==='concl'; }).length+'</div><div class="kl">Pedidos concluídos</div></button>'
+    +'</div>'
+    +'<div class="dashgrid">'
+    +'<div class="panel p-pad"><div class="ph"><h3>Atividade recente</h3><a onclick="go(\'notifs\')">Ver todas</a></div><div class="qlist">'
+    +S.notifs.supplier.slice(0,4).map(function(n){
+      return '<div class="qitem" onclick="go(\'notifs\')"><div class="qic"><i data-lucide="'+n.ic+'"></i></div>'
+        +'<div><b>'+n.t+'</b><span>'+n.d+'</span></div><div class="w">'+n.w+'</div></div>';
+    }).join('')
+    +'</div></div>'
+    +'<div class="panel p-pad"><div class="ph"><h3>Atalhos</h3></div><div class="quick">'
+    +'<button onclick="go(\'quotesSup\')"><i data-lucide="file-text"></i>Cotações</button>'
+    +'<button onclick="go(\'productsSup\')"><i data-lucide="package"></i>Meus produtos</button>'
+    +'<button onclick="go(\'reqProduct\')"><i data-lucide="package-plus"></i>Solicitar produto</button>'
+    +'<button onclick="go(\'ordersS\')"><i data-lucide="truck"></i>Meus pedidos</button>'
+    +'<button onclick="go(\'company\')"><i data-lucide="building-2"></i>Minha empresa</button>'
+    +'<button onclick="go(\'notifs\')"><i data-lucide="bell"></i>Notificações</button>'
+    +'<button onclick="window.open(dashURL(),\'_blank\')"><i data-lucide="bar-chart-3"></i>Estatísticas</button>'
+    +'</div><hr class="sep">'
+    +'<div class="note"><i data-lucide="info"></i><div>Seu mix atual: <b>'+SUPPLIERS[DEMO_SUP].cats.join(' · ')+'</b>. Você recebe apenas os itens que os compradores direcionaram à sua empresa.</div></div>'
+    +'</div></div>');
+}
+
+/* ---------- cotações recebidas ---------- */
+function supViewStatus(q){
+  if(q._winner===DEMO_SUP){ return {k:'aceita',l:'Proposta aceita',i:'badge-check',c:'st-mint'}; }
+  var mine=q.proposals.find(function(p){ return p.sup===DEMO_SUP; });
+  if(mine && mine.refused){ return {k:'recusada',l:'Cotação recusada por você',i:'circle-slash',c:'st-err'}; }
+  if(mine){ return {k:'respondida',l:'Respondida — aguardando decisão',i:'hourglass',c:'st-warn'}; }
+  if(q.status==='expirada'){ return {k:'expirada',l:'Expirada',i:'timer-off',c:'st-err'}; }
+  return {k:'nova',l:'Nova — aguardando sua resposta',i:'bell',c:'st-cop'};
+}
+function viewQuotesSup(){
+  var qs=supQuotes();
+  var cd=countdownInfo();
+  return appShell('quotesSup','Cotações Recebidas',qs.length+' cotação(ões)',
+    pageHead([{label:'Dashboard',screen:'dashS'},{label:'Cotações recebidas'}],'Cotações recebidas',
+      'Solicitações com itens direcionados à sua empresa pelos compradores, através da Dushell.',
+      null,'US-010','Eu como fornecedor, preciso visualizar as solicitações recebidas, para identificar oportunidades de fornecimento.')
+    +'<div class="panel tblwrap"><table class="tbl">'
+    +'<thead><tr><th>Cotação</th><th>Comprador</th><th>Data</th><th class="rgt">Itens p/ você</th><th>Prazo para resposta</th><th>Status</th><th></th></tr></thead><tbody>'
+    +qs.map(function(q){
+      var st=supViewStatus(q);
+      var pending=st.k==='nova';
+      var nItens=itemsForSup(q,DEMO_SUP).length;
+      var prazoCell=pending
+        ? '<b style="color:var(--blue-d)">Prazo: '+q.deadline+'</b><div style="font-size:12px;color:var(--mut)">expira hoje às 18:30 · '+cd.rest+' restantes</div>'
+        : '<span style="font-size:12.5px;color:var(--mut)">'+q.deadline+'</span>';
+      return '<tr class="rowc" onclick="go(\'quoteResp\',\''+q.id+'\')">'
+        +'<td><b class="mono" style="font-size:13px;color:var(--navy)">'+q.id+'</b></td>'
+        +'<td style="font-size:13.5px">'+q.buyerShort+'</td>'
+        +'<td style="font-size:13px;color:var(--mut)">'+q.date+'</td>'
+        +'<td class="rgt num">'+nItens+'</td>'
+        +'<td>'+prazoCell+'</td>'
+        +'<td><span class="bdg '+st.c+'"><i data-lucide="'+st.i+'"></i>'+st.l+'</span></td>'
+        +'<td class="rgt">'+(pending?'<span class="btn btn-p btn-sm">Responder</span>':'<i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--soft)"></i>')+'</td></tr>';
+    }).join('')
+    +'</tbody></table></div>'
+    +'<div class="note" style="margin-top:16px"><i data-lucide="clock"></i><div><b>Prazo-padrão de resposta: 24 horas.</b> Contagem regressiva real e alertas de vencimento entram na Etapa 3 (Comunicação). '+FUT('Cronômetro real')+'</div></div>');
+}
+
+/* ---------- responder cotação ---------- */
+function initResp(q){
+  var items=itemsForSup(q,DEMO_SUP);
+  var map={};
+  items.forEach(function(it){ map[it.sku]={avail:true,price:'',qty:'',term:'',note:''}; });
+  S.resp={qid:q.id,items:map,list:items,cond:'a-combinar'};
+}
+function collectResp(){
+  if(!S.resp){ return; }
+  document.querySelectorAll('[data-sku]').forEach(function(el){
+    var sku=el.getAttribute('data-sku'),f=el.getAttribute('data-f');
+    if(S.resp.items[sku] && S.resp.items[sku][f]!==undefined){ S.resp.items[sku][f]=el.value; }
+  });
+  var c=$('p-cond'); if(c){ S.resp.cond=c.value; }
+}
+function toggleAvail(sku){
+  collectResp();
+  if(S.resp && S.resp.items[sku]){ S.resp.items[sku].avail=!S.resp.items[sku].avail; }
+  render();
+}
+function viewQuoteResp(){
+  var q=getQuote(S.sqid);
+  if(!q){ S.screen='quotesSup'; return viewQuotesSup(); }
+  var mine=q.proposals.find(function(p){ return p.sup===DEMO_SUP; });
+  if(mine && !mine.refused){
+    var meusItens=itemsForSup(q,DEMO_SUP);
+    return appShell('quotesSup','Cotação '+q.id,'Proposta enviada — aguardando decisão do comprador',
+      pageHead([{label:'Cotações recebidas',screen:'quotesSup'},{label:q.id}],'Cotação '+q.id,'Proposta enviada — aguardando decisão do comprador.',
+        null,'US-012','Eu como fornecedor, preciso acompanhar o status das propostas enviadas, para saber se foram aceitas.')
+      +'<div class="panel p-pad">'
+      +'<div style="display:flex;gap:13px;align-items:center;flex-wrap:wrap">'
+      +'<div class="done-ic" style="width:46px;height:46px;margin:0"><i data-lucide="check-circle-2"></i></div>'
+      +'<div><b style="font-size:15px;color:var(--navy)">Você respondeu a esta cotação em '+mine.sentAt+'</b>'
+      +'<div style="font-size:13px;color:var(--mut)">Cobre '+propCovered(q,mine)+' de '+meusItens.length+' itens direcionados · total cotado '+money(propTotal(q,mine))+'</div></div></div>'
+      +'<hr class="sep">'
+      +'<div class="tblwrap"><table class="tbl">'
+      +'<thead><tr><th>Produto</th><th class="rgt">Qtde</th><th class="rgt">Preço unitário</th><th class="rgt">Prazo</th></tr></thead><tbody>'
+      +meusItens.map(function(it){
+        var l=mine.lines[it.sku];
+        return '<tr><td><b>'+P(it.sku).name+'</b>'+(l&&l.note?'<div style="font-size:12px;color:var(--soft);font-style:italic">'+esc(l.note)+'</div>':'')+'</td>'
+          +'<td class="rgt num">'+fmtN(it.qty)+'</td>'
+          +'<td class="rgt">'+(l?'<b class="mono">'+money(l.price)+'</b>':'<span class="bdg st-err"><i data-lucide="circle-slash"></i>Não ofertado</span>')+'</td>'
+          +'<td class="rgt" style="font-size:13px">'+(l?l.term+' dia(s)':'—')+'</td></tr>';
+      }).join('')
+      +'</tbody></table></div>'
+      +'<div class="note" style="margin-top:14px"><i data-lucide="hourglass"></i><div>Status: aguardando a decisão do comprador '+q.buyerShort+'. Você será notificado quando houver resposta.</div></div>'
+      +'</div>');
+  }
+  if(mine && mine.refused){
+    return appShell('quotesSup','Cotação '+q.id,'Recusada',
+      pageHead([{label:'Cotações recebidas',screen:'quotesSup'},{label:q.id}],'Cotação '+q.id,'','',
+        'US-011','')
+      +'<div class="panel">'+emptyBox('circle-slash','Você recusou esta cotação','Motivo registrado: '+esc(mine.reason))+'</div>');
+  }
+  if(!S.resp || S.resp.qid!==q.id){ initResp(q); }
+  if(!S.resp.list.length){
+    return appShell('quotesSup','Cotação '+q.id,'Sem itens direcionados',
+      pageHead([{label:'Cotações recebidas',screen:'quotesSup'},{label:q.id}],'Cotação '+q.id,'','',
+        'US-010','')
+      +'<div class="panel">'+emptyBox('inbox','Nenhum item direcionado à sua empresa','Os itens desta cotação foram direcionados a outros fornecedores pelos compradores.')+'</div>');
+  }
+  var cd=countdownInfo();
+  var itemsHtml=S.resp.list.map(function(it){
+    var r=S.resp.items[it.sku];
+    var p=P(it.sku);
+    var fields=r.avail
+      ? '<div class="rfields">'
+        +'<div class="fld"><label>Preço unitário (R$) *</label><input class="inp mono" type="number" step="0.01" min="0" placeholder="0,00" data-sku="'+it.sku+'" data-f="price" value="'+esc(r.price)+'"></div>'
+        +'<div class="fld"><label>Qtde disponível <span class="opt">(opcional)</span></label><input class="inp mono" type="number" min="0" placeholder="'+fmtN(it.qty)+'" data-sku="'+it.sku+'" data-f="qty" value="'+esc(r.qty)+'"></div>'
+        +'<div class="fld"><label>Prazo de entrega (dias) *</label><input class="inp mono" type="number" min="0" placeholder="ex.: 5" data-sku="'+it.sku+'" data-f="term" value="'+esc(r.term)+'"></div>'
+        +'<div class="fld" style="grid-column:1/-1;margin-bottom:0"><label>Observações do item</label><input class="inp" placeholder="ex.: preço válido para o lote completo, embalagem especial…" data-sku="'+it.sku+'" data-f="note" value="'+esc(r.note)+'"></div>'
+        +'</div>'
+      : '';
+    return '<div class="ritem'+(r.avail?'':' off')+'">'
+      +'<div class="rhead"><div><b>'+p.name+'</b><div class="sku">'+it.sku+' · '+p.cat+' · '+p.unit+'</div></div>'
+      +'<span class="rq">Solicitado: <b style="color:var(--ink)">'+fmtN(it.qty)+'</b></span>'
+      +'<div class="swrow" onclick="toggleAvail(\''+it.sku+'\')"><span class="sw'+(r.avail?' on':'')+'" role="switch" aria-checked="'+r.avail+'"></span>'
+      +'<span>'+(r.avail?'Disponível':'Indisponível — item recusado')+'</span></div></div>'
+      +fields+'</div>';
+  }).join('');
+  return appShell('quotesSup','Responder '+q.id,S.resp.list.length+' item(ns) direcionado(s) · prazo '+q.deadline,
+    pageHead([{label:'Cotações recebidas',screen:'quotesSup'},{label:q.id}],'Responder cotação '+q.id,
+      esc(q.buyer)+' · enviada em '+q.date+' · entrega: '+esc(q.delivery),
+      null,'US-011','Eu como fornecedor, preciso informar preço, disponibilidade e prazo, para responder à solicitação do comprador.')
+    +'<div class="note warnn" style="margin-bottom:18px"><i data-lucide="timer"></i>'
+    +'<div><b>Tempo restante para resposta: '+cd.rest+'</b> (expira hoje às 18:30 — simulação visual).'
+    +' Você está vendo <b>'+S.resp.list.length+' de '+q.items.length+'</b> itens da cotação — apenas os direcionados à sua empresa.'
+    +(q.obs?'<br><b>Observações do comprador:</b> '+esc(q.obs):'')+'</div></div>'
+    +itemsHtml
+    +'<div class="rejbox"><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">'
+    +'<div style="flex:1;min-width:240px"><b style="font-size:14.5px;color:var(--navy)">Não pode atender esta solicitação?</b>'
+    +'<div style="font-size:13px;color:var(--mut)">Você pode recusar a cotação inteira com um motivo. Isso é registrado para o comprador.</div></div>'
+    +'<button class="btn btn-d" onclick="askRejectQuote()"><i data-lucide="circle-slash"></i>Recusar cotação inteira</button>'
+    +'</div></div>'
+    +'<div class="panel p-pad" style="margin-top:16px">'
+    +'<div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">'
+    +'<div style="flex:1;min-width:260px"><div class="fld" style="margin-bottom:8px"><label>Condições comerciais resumidas</label>'
+    +'<select class="sel" id="p-cond" onchange="collectResp()">'
+    +'<option value="a-combinar"'+(S.resp.cond==='a-combinar'?' selected':'')+'>A combinar com o comprador (a definir)</option>'
+    +'<option value="ddl28"'+(S.resp.cond==='ddl28'?' selected':'')+'>Pagamento 28 ddl</option>'
+    +'<option value="5050"'+(S.resp.cond==='5050'?' selected':'')+'>50% entrada + 50% na entrega</option>'
+    +'<option value="avista"'+(S.resp.cond==='avista'?' selected':'')+'>À vista com desconto a definir</option>'
+    +'</select><div style="margin-top:8px">'+RN()+'</div></div></div>'
+    +'<button class="btn btn-p btn-lg" onclick="reviewProposal()"><i data-lucide="arrow-right"></i>Revisar proposta</button>'
+    +'</div></div>');
+}
+function reviewProposal(){
+  collectResp();
+  var q=getQuote(S.resp.qid); if(!q){ return; }
+  var bad=S.resp.list.filter(function(it){
+    var r=S.resp.items[it.sku];
+    return r.avail && (!parseFloat(r.price) || r.term==='');
+  });
+  if(bad.length){ toast('Informe preço unitário e prazo para todos os itens disponíveis.','warn'); return; }
+  var allOff=S.resp.list.every(function(it){ return !S.resp.items[it.sku].avail; });
+  if(allOff){ toast('Todos os itens estão indisponíveis. Recuse a cotação inteira ou oferte ao menos um item.','warn'); return; }
+  go('proposalReview');
+}
+function viewProposalReview(){
+  if(!S.resp){ S.screen='quotesSup'; return viewQuotesSup(); }
+  var q=getQuote(S.resp.qid);
+  if(!q){ S.resp=null; S.screen='quotesSup'; return viewQuotesSup(); }
+  var rows=S.resp.list.filter(function(it){ return S.resp.items[it.sku].avail; });
+  var total=0,maxTerm=0;
+  var bodyRows=rows.map(function(it){
+    var r=S.resp.items[it.sku];
+    var price=parseFloat(r.price),term=parseInt(r.term,10)||0;
+    var sub=price*it.qty; total+=sub; if(term>maxTerm){ maxTerm=term; }
+    return '<tr><td><b style="font-size:13.5px;color:var(--navy)">'+P(it.sku).name+'</b><div class="sku">'+it.sku+'</div>'
+      +(r.note?'<div style="font-size:12px;color:var(--soft);font-style:italic">'+esc(r.note)+'</div>':'')+'</td>'
+      +'<td class="rgt num">'+fmtN(it.qty)+'</td>'
+      +'<td class="rgt"><b class="mono">'+money(price)+'</b></td>'
+      +'<td class="rgt"><b class="mono">'+money(sub)+'</b></td>'
+      +'<td class="rgt num">'+term+' d</td></tr>';
+  }).join('');
+  return appShell('quotesSup','Revisão da proposta',q.id,
+    pageHead([{label:'Cotações recebidas',screen:'quotesSup'},{label:'Responder',screen:'quoteResp',id:q.id},{label:'Revisão'}],'Revise sua proposta antes de enviar',
+      'Confira preços, prazos e observações. A proposta é enviada ao comprador através da Dushell.',
+      null,'US-011','Eu como fornecedor, preciso revisar minha proposta antes do envio, para garantir condições corretas ao comprador.')
+    +'<div class="cartgrid"><div class="panel tblwrap"><table class="tbl">'
+    +'<thead><tr><th>Produto</th><th class="rgt">Qtde</th><th class="rgt">Preço unit.</th><th class="rgt">Subtotal</th><th class="rgt">Prazo</th></tr></thead>'
+    +'<tbody>'+bodyRows
+    +'<tr style="background:#F7F9FD"><td colspan="3" style="font-weight:700;color:var(--navy)">Total da proposta</td>'
+    +'<td class="rgt"><span class="cmp-total" style="font-size:17px">'+money(total)+'</span></td>'
+    +'<td class="rgt num">'+maxTerm+' d (máx.)</td></tr>'
+    +'</tbody></table></div>'
+    +'<div class="sticky-side"><div class="panel p-pad">'
+    +'<h3 style="font-size:16px;margin-bottom:12px;color:var(--navy)">Resumo do envio</h3>'
+    +'<div class="sumrow"><span>Comprador</span><b style="font-size:13px">'+q.buyerShort+'</b></div>'
+    +'<div class="sumrow"><span>Itens ofertados</span><b>'+rows.length+' de '+S.resp.list.length+'</b></div>'
+    +'<div class="sumrow"><span>Condições</span><b style="font-size:12px;text-align:right;max-width:150px">'+CONDS[S.resp.cond]+'</b></div>'
+    +'<div style="margin:6px 0 2px">'+RN()+'</div>'
+    +'<hr class="sep">'
+    +'<button class="btn btn-p blk btn-lg" onclick="askSendProposal()"><i data-lucide="send"></i>Enviar proposta</button>'
+    +'<div class="hint">Itens marcados como indisponíveis ficam registrados como "não ofertados".</div>'
+    +'</div></div></div>');
+}
+function askSendProposal(){
+  var qid=S.resp.qid;
+  confirmModal({title:'Enviar proposta ao comprador?',
+    body:'<p style="font-size:14px;color:var(--mut)">A proposta da <b style="color:var(--ink)">'+SUPPLIERS[DEMO_SUP].short+'</b> será enviada ao comprador. Após o envio, ela fica disponível para comparação e decisão.</p>',
+    okLabel:'<i data-lucide="send"></i>Enviar proposta',
+    onOk:function(){ sendProposalNow(qid); }});
+}
+function sendProposalNow(qid){
+  run('Enviando proposta ao comprador…',850,function(){
+    var q=getQuote(qid); if(!q){ return; }
+    var lines={};
+    S.resp.list.forEach(function(it){
+      var r=S.resp.items[it.sku];
+      lines[it.sku]=r.avail?{price:parseFloat(r.price),term:parseInt(r.term,10)||0,note:r.note||null}:null;
+    });
+    q.proposals.push({sup:DEMO_SUP,sentAt:nowDT(),conditions:CONDS[S.resp.cond],lines:lines});
+    recomputeStatus(q);
+    notif('buyer','Proposta recebida',SUPPLIERS[DEMO_SUP].short+' respondeu à cotação '+q.id+'. Compare as propostas antes de escolher.','mail-check');
+    S.resp=null;
+    toast('Proposta enviada com sucesso.');
+    go('proposalSent',qid);
+  });
+}
+function viewProposalSent(){
+  var q=getQuote(S.sqid);
+  if(!q){ S.screen='dashS'; return viewDashS(); }
+  return appShell('quotesSup','Proposta enviada',q.id,
+    '<div class="uslab">US-011 · Confirmação de envio</div>'
+    +'<div class="done-wrap"><div class="panel p-pad center">'
+    +'<div class="done-ic"><i data-lucide="check"></i></div>'
+    +'<h2 style="font-size:22px;color:var(--navy)">Proposta enviada com sucesso</h2>'
+    +'<p style="color:var(--mut);margin:10px 0 20px">O comprador <b>'+q.buyerShort+'</b> foi notificado e poderá comparar sua proposta com as de outros fornecedores.</p>'
+    +'<div class="meta-grid">'
+    +'<div class="mg"><small>Cotação</small><b class="mono">'+q.id+'</b></div>'
+    +'<div class="mg"><small>Comprador</small><b>'+q.buyerShort+'</b></div>'
+    +'</div>'
+    +'<div class="note" style="text-align:left"><i data-lucide="hourglass"></i><div><b>Agora é aguardar a decisão.</b> Se sua proposta for escolhida, um pedido será gerado e você será notificado. '+FUT('Notificação real — Etapa 3')+'</div></div>'
+    +'<div class="note" style="text-align:left;margin-top:10px"><i data-lucide="refresh-cw"></i><div><b>Dica de demonstração:</b> use "Trocar perfil" no menu da sidebar para ver esta proposta chegando ao comprador.</div></div>'
+    +'<hr class="sep">'
+    +'<button class="btn btn-p" onclick="go(\'quotesSup\')"><i data-lucide="file-text"></i>Voltar às cotações recebidas</button>'
+    +'</div></div>');
+}
+function askRejectQuote(){
+  confirmModal({title:'Recusar esta cotação inteira?',
+    body:'<div class="fld"><label>Motivo da recusa</label><select class="sel" id="rej-reason">'
+      +'<option>Fora do mix de fornecimento da empresa.</option>'
+      +'<option>Capacidade de produção indisponível no período.</option>'
+      +'<option>Prazo de entrega inviável para o solicitado.</option>'
+      +'<option>Outro motivo (informar nas observações).</option>'
+      +'</select></div>'
+      +'<div class="note"><i data-lucide="info"></i><div>O comprador será notificado da recusa com o motivo informado (simulação).</div></div>',
+    okLabel:'<i data-lucide="circle-slash"></i>Recusar cotação',danger:true,
+    onOk:function(){
+      var q=getQuote(S.resp.qid); if(!q){ return; }
+      var reasonEl=$('rej-reason');
+      q.proposals.push({sup:DEMO_SUP,refused:true,reason:reasonEl?reasonEl.value:'',sentAt:nowDT()});
+      recomputeStatus(q);
+      notif('buyer','Fornecedor recusou',SUPPLIERS[DEMO_SUP].short+' recusou a cotação '+q.id+'.','circle-slash');
+      S.resp=null;
+      toast('Cotação recusada. O comprador será notificado (simulação).','warn');
+      go('quotesSup');
+    }});
+}
+
+/* ---------- meus produtos ---------- */
+function viewProductsSup(){
+  var mine=PRODUCTS.filter(function(p){ return p.sup.indexOf(DEMO_SUP)>-1; });
+  return appShell('productsSup','Meus Produtos',mine.length+' produto(s) vinculados',
+    pageHead([{label:'Dashboard',screen:'dashS'},{label:'Meus produtos'}],'Meus Produtos',
+      'Itens vinculados à sua atuação junto à Dushell. A disponibilidade pode ser atualizada a qualquer momento.',
+      null,'FOR-CAT','Eu como fornecedor, preciso visualizar os produtos que comercializo, para manter minhas informações de fornecimento atualizadas.')
+    +'<div class="panel tblwrap"><table class="tbl">'
+    +'<thead><tr><th>Produto</th><th>Código</th><th>Categoria</th><th>Unidade</th><th>Disponibilidade</th><th>Info comercial</th></tr></thead><tbody>'
+    +mine.map(function(p){
+      var on=isOffering(p.sku);
+      return '<tr><td><b style="font-size:13.5px;color:var(--navy)">'+p.name+'</b><div style="font-size:12px;color:var(--mut)">Marca '+p.brand+'</div></td>'
+        +'<td class="sku">'+p.sku+'</td>'
+        +'<td style="font-size:13px;color:var(--mut)">'+p.cat+'</td>'
+        +'<td style="font-size:13px;color:var(--mut)">'+p.unit+'</td>'
+        +'<td><div class="swrow" onclick="toggleProduct(\''+p.sku+'\')"><span class="sw'+(on?' on':'')+'"></span>'
+        +'<span style="font-weight:600;color:'+(on?'var(--ok)':'var(--err)')+'">'+(on?'Ofertando':'Pausado')+'</span></div></td>'
+        +'<td style="font-size:12.5px;color:var(--mut)">Preço informado apenas na proposta · '+RN()+'</td></tr>';
+    }).join('')
+    +'</tbody></table></div>'
+    +'<div class="note" style="margin-top:16px"><i data-lucide="info"></i><div>Não há tabela de preços fixa no catálogo: o preço é comunicado em cada proposta de cotação, conforme o modelo de negócio da Dushell. '+RN()+'</div></div>');
+}
+function toggleProduct(sku){
+  S.disp[sku]=!isOffering(sku);
+  toast(isOffering(sku)?'Produto disponível novamente (simulação).':'Produto pausado — não será incluído em novas propostas (simulação).');
+  render();
+}
+
+/* ---------- solicitar novo produto ---------- */
+function viewReqProduct(){
+  return appShell('reqProduct','Solicitar Produto','Inclusão de novo item no catálogo',
+    pageHead([{label:'Dashboard',screen:'dashS'},{label:'Solicitar produto'}],'Solicitar inclusão de produto',
+      'Informe um item que você pode fornecer e que ainda não está no catálogo. A Dushell analisa e, se aprovado, o produto é vinculado à sua empresa.',
+      null,'US-013','Eu como fornecedor, preciso solicitar a inclusão de um novo produto, para ampliar os itens que posso fornecer.')
+    +'<div class="dashgrid"><div class="panel p-pad">'
+    +'<form onsubmit="event.preventDefault();submitProdReq(this)" novalidate>'
+    +'<div class="grid2">'+fld('prnome','Nome do produto',true,'text','ex.: Parafuso Allen M10×50')+fld('prmarca','Marca',true,'text','ex.: FixPro')+'</div>'
+    +'<div class="grid3">'+selFld('prcat','Categoria',CATS,true)+fld('prcod','Código do produto',false,'text','seu código interno')+selFld('prun','Unidade',UNITS,true)+'</div>'
+    +txaFld('prdesc','Descrição',true,'Especificações técnicas, normas, embalagem…')
+    +'<div class="grid2">'+fld('prcap','Capacidade de fornecimento',true,'text','ex.: 5.000 un./mês')+fld('probs','Observações',false,'text','certificações, amostras, prazos…')+'</div>'
+    +'<div class="form-foot"><span class="hint" style="margin:0">A análise é realizada pela equipe Dushell.</span>'
+    +'<button class="btn btn-p" type="submit"><i data-lucide="send"></i>Enviar solicitação</button></div>'
+    +'</form></div>'
+    +'<div class="sticky-side"><div class="panel p-pad">'
+    +'<div class="ph"><h3>Suas solicitações</h3></div><div class="qlist">'
+    +S.prodReqs.map(function(r){
+      var st=r.status==='aprovada'?['badge-check','st-mint','Aprovada']:(r.status==='recusada'?['x-circle','st-err','Recusada']:['hourglass','st-warn','Em análise']);
+      return '<div class="qitem" style="cursor:default"><div class="qic"><i data-lucide="package-plus"></i></div>'
+        +'<div><b>'+r.name+'</b><span>'+r.id+' · '+r.date+'</span></div>'
+        +'<span class="bdg '+st[1]+'" style="margin-left:auto"><i data-lucide="'+st[0]+'"></i>'+st[2]+'</span></div>';
+    }).join('')
+    +'</div><hr class="sep">'
+    +'<div class="note"><i data-lucide="info"></i><div>Fluxo: <b>solicitação enviada → em análise → aprovada / recusada</b>. O módulo administrativo de análise é uma etapa futura. '+FUT()+'</div></div>'
+    +'</div></div></div>');
+}
+function submitProdReq(form){
+  if(!reqOk(form)){ return; }
+  var g=grab(form);
+  S.prodReqs.unshift({id:'PR-0000'+S.seq.pr++,name:g.prnome,date:todayBR(),status:'analise'});
+  toast('Solicitação enviada. Status inicial: em análise pela Dushell.');
+  render(); window.scrollTo(0,0);
+}
+
+/* ---------- pedidos do fornecedor ---------- */
+function viewOrdersS(){
+  var mine=S.orders.filter(function(o){ return o.sup===DEMO_SUP; });
+  var table=!mine.length
+    ? '<div class="panel">'+emptyBox('truck','Nenhum pedido confirmado ainda','Pedidos surgem quando compradores selecionam suas propostas.')+'</div>'
+    : '<div class="panel tblwrap"><table class="tbl">'
+      +'<thead><tr><th>Pedido</th><th>Data</th><th>Comprador</th><th>Produtos</th><th class="rgt">Valor</th><th>Status</th></tr></thead><tbody>'
+      +mine.map(function(o){
+        return '<tr><td><b class="mono" style="font-size:13px;color:var(--navy)">'+o.id+'</b><div class="sku">'+o.quote+'</div></td>'
+          +'<td style="font-size:13px;color:var(--mut)">'+o.date+'</td>'
+          +'<td style="font-size:13.5px">'+o.buyerShort+'</td>'
+          +'<td style="font-size:12.5px;color:var(--mut);min-width:200px">'+o.items.map(function(i){ return esc(P(i.sku).name)+' × '+fmtN(i.qty); }).join('<br>')+'</td>'
+          +'<td class="rgt"><b class="mono" style="font-size:13px">'+money(o.total)+'</b></td>'
+          +'<td>'+badge(o.status,OST)+'</td></tr>';
+      }).join('')
+      +'</tbody></table></div>'
+      +'<div class="note" style="margin-top:16px"><i data-lucide="info"></i><div>A confirmação de pagamento e as instruções de faturamento dependem de <b>decisões comerciais em aberto</b> — quem paga a quem, comissão da Dushell, frete e impostos. '+RN()+'</div></div>';
+  return appShell('ordersS','Meus Pedidos',mine.length+' pedido(s)',
+    pageHead([{label:'Dashboard',screen:'dashS'},{label:'Meus pedidos'}],'Meus Pedidos',
+      'Vendas confirmadas através da Dushell. O fluxo financeiro completo (quem paga a quem) é uma regra comercial ainda a definir.',
+      null,'US-014','Eu como fornecedor, preciso acompanhar os pedidos confirmados, para organizar meu atendimento.')
+    +table);
+}
+
+/* ---------- minha empresa ---------- */
+function viewCompany(){
+  var s=SUPPLIERS[DEMO_SUP];
+  return appShell('company','Minha Empresa',s.name,
+    pageHead([{label:'Dashboard',screen:'dashS'},{label:'Minha empresa'}],'Minha Empresa',
+      'Dados cadastrais apresentados à Dushell. Alterações relevantes podem reabrir a análise cadastral.',
+      null,'FOR-EMP','Eu como fornecedor, preciso manter os dados da minha empresa atualizados, para continuar apto a receber cotações.')
+    +'<div style="display:flex;gap:14px;align-items:center;margin-bottom:18px;flex-wrap:wrap">'
+    +'<span class="bdg st-mint"><i data-lucide="shield-check"></i>Fornecedor aprovado pela Dushell</span>'
+    +'<span style="font-size:12.5px;color:var(--mut)">desde 12/08/2024 · mix: '+s.cats.join(' · ')+'</span></div>'
+    +'<div class="dashgrid"><div>'
+    +'<div class="panel p-pad" style="margin-bottom:18px">'
+    +'<div class="ph"><h3>Dados cadastrais</h3></div>'
+    +'<div class="grid2">'+fld('crazao','Razão social',true)+fld('cfant','Nome fantasia',true)+'</div>'
+    +'<div class="grid3">'+fld('ccnpj','CNPJ',true,'text','',' data-doc="cnpj" autocomplete="off"')+fld('cie','Inscrição estadual',false)+selFld('cseg','Segmento',['Metalurgia e fixadores','Componentes elétricos','EPI e segurança','Embalagens','Hidráulica','Outro'],true)+'</div>'
+    +'<div style="margin-top:4px"><label style="font-size:12.5px;font-weight:600;color:#33406B;display:block;margin-bottom:4px">Categorias fornecidas</label>'
+    +CATS.map(function(c){ return '<label class="chkline" style="display:inline-flex;padding:4px 16px 4px 0"><input type="checkbox"'+(s.cats.indexOf(c)>-1?' checked':'')+' onchange="toast(\'Categoria atualizada (simulação).\')"><span>'+c+'</span></label>'; }).join('')
+    +'</div></div>'
+    +'<div class="panel p-pad" style="margin-bottom:18px">'
+    +'<div class="ph"><h3>Contato</h3></div>'
+    +'<div class="grid3">'+fld('cemail','E-mail comercial',true)+fld('ctel','Telefone',true)+fld('cwhats','WhatsApp',false)+'</div>'
+    +'<div class="grid2">'+fld('crnome','Responsável',true)+fld('crcargo','Cargo',true)+'</div></div>'
+    +'<div class="panel p-pad">'
+    +'<div class="ph"><h3>Endereço</h3></div>'
+    +'<div class="grid3">'+fld('ccep','CEP',true)+selFld('cuf','Estado',UF_LIST,true)+fld('ccidade','Cidade',true)+'</div>'
+    +'<div class="grid2">'+fld('caddr','Logradouro e número',true)+fld('ccompl','Complemento',false)+'</div>'
+    +'<div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn btn-p" onclick="saveProfileDemo()"><i data-lucide="check"></i>Salvar alterações</button></div>'
+    +'</div></div>'
+    +'<div class="sticky-side"><div class="panel p-pad">'
+    +'<div style="display:flex;gap:12px;align-items:center;margin-bottom:6px">'
+    +'<div class="avat" style="width:44px;height:44px;font-size:15px">'+s.ini+'</div>'
+    +'<div><b style="font-size:15px;color:var(--navy)">'+s.short+'</b><div style="font-size:12.5px;color:var(--mut)">'+s.city+'</div></div></div>'
+    +'<hr class="sep">'
+    +'<div class="sumrow"><span>Produtos vinculados</span><b>'+PRODUCTS.filter(function(p){ return p.sup.indexOf(DEMO_SUP)>-1; }).length+'</b></div>'
+    +'<div class="sumrow"><span>Cotações recebidas</span><b>'+supQuotes().length+'</b></div>'
+    +'<div class="sumrow"><span>Propostas enviadas</span><b>'+S.quotes.reduce(function(a,q){ return a+q.proposals.filter(function(p){ return p.sup===DEMO_SUP && !p.refused; }).length; },0)+'</b></div>'
+    +'<div class="sumrow"><span>Pedidos</span><b>'+S.orders.filter(function(o){ return o.sup===DEMO_SUP; }).length+'</b></div>'
+    +'<hr class="sep">'
+    +'<div class="note"><i data-lucide="info"></i><div>Edição de produtos e dados sensíveis pode exigir nova aprovação da Dushell. '+FUT('Módulo administrativo')+'</div></div>'
+    +'</div></div></div>');
+}
+
+/* ================================================================
+   COMUNS — NOTIFICAÇÕES E ROADMAP
+   ================================================================ */
+function viewNotifs(){
+  var which=S.profile==='supplier'?'supplier':'buyer';
+  var list=S.notifs[which];
+  var unread=unreadCount(which);
+  var dash=which==='supplier'?'dashS':'dashB';
+  return appShell('notifs','Notificações',unread+' não lida(s)',
+    pageHead([{label:'Dashboard',screen:dash},{label:'Notificações'}],'Notificações',
+      'Central de avisos da plataforma. No produto final, com e-mails e alertas em tempo real (Etapa 3).',
+      unread?'<button class="btn btn-s" onclick="markAllRead()"><i data-lucide="mail"></i>Marcar todas como lidas ('+unread+')</button>':'',
+      'NTF','Eu como usuário, preciso de uma central de avisos, para não perder nenhuma movimentação importante.')
+    +'<div class="panel">'
+    +list.map(function(n){
+      return '<div class="qitem" style="cursor:default;padding:15px 20px;'+(n.unread?'background:#F6F8FD;':'')+'">'
+        +'<div class="qic" style="background:'+(n.unread?'var(--blue-t)':'#EDF1F9')+';color:'+(n.unread?'var(--blue-d)':'#44506E')+'"><i data-lucide="'+n.ic+'"></i></div>'
+        +'<div><b>'+n.t+(n.unread?' <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--blue);vertical-align:2px"></span>':'')+'</b>'
+        +'<span>'+n.d+'</span></div><div class="w">'+n.w+'</div></div>';
+    }).join('')
+    +'</div>'
+    +'<div class="note" style="margin-top:16px"><i data-lucide="mail"></i><div>Exemplos do produto final: cotação enviada, fornecedor respondeu, cotação expirando, proposta aceita, pedido confirmado, pagamento confirmado. '+FUT('Notificações reais — Etapa 3')+'</div></div>');
+}
+function markAllRead(){
+  var which=S.profile==='supplier'?'supplier':'buyer';
+  S.notifs[which].forEach(function(n){ n.unread=false; });
+  toast('Todas as notificações marcadas como lidas.');
+  render();
+}
+function viewRoadmap(){
+  var steps=[
+    {n:1,t:'Protótipo (você está aqui)',cur:true,d:'Esta entrega: validação visual e conceitual dos fluxos com dados simulados.',items:['Fluxos e telas principais','Escolha e filtro de fornecedor','Estados de interface e confirmações','Validação de CPF/CNPJ (dígito verificador)','Dashboard analítico com rotas por perfil']},
+    {n:2,t:'Sistema funcional',d:'Implementação real do produto.',items:['Banco de dados','Usuários e autenticação','Produtos e categorias','Cotações e fornecedores','Pedidos']},
+    {n:3,t:'Comunicação',d:'Canais entre plataforma, compradores e fornecedores.',items:['E-mails','Notificações e alertas','Controle do prazo de resposta (24h)']},
+    {n:4,t:'Pagamentos',d:'Camada financeira da operação.',items:['Formas de pagamento','Gateway','Confirmação','Status financeiro']},
+    {n:5,t:'Operação',d:'Consolidação da operação Dushell.',items:['Pedidos e logística','Histórico e indicadores','Administração Dushell']}
+  ];
+  var defs=['Quem paga a quem','Comissão / margem da Dushell','Distribuição automática vs. escolha manual de fornecedores','Frete','Impostos e regras fiscais','Validade das propostas','Cancelamentos e devoluções','Condições de pagamento'];
+  var inner='<div class="uslab">ROADMAP · Evolução do produto</div>'
+    +'<h1 style="font-size:26px;color:var(--navy);margin-bottom:8px;text-align:left">Próximas etapas</h1>'
+    +'<p style="color:var(--mut);margin-bottom:28px;max-width:580px">Este protótipo representa a <b>Etapa 1</b>. As funcionalidades seguintes compõem a evolução natural do produto, respeitando o princípio de MVP.</p>'
+    +'<div class="story" style="max-width:660px"><i data-lucide="clipboard-list"></i><span>Eu como cliente, preciso ver as próximas etapas do produto, para entender o caminho entre o protótipo e a operação real.</span></div>'
+    +'<div class="rm">'
+    +steps.map(function(s){
+      return '<div class="rmstep'+(s.cur?' cur':'')+'"><div class="rmdot">'+s.n+'</div>'
+        +'<h3>'+s.t+(s.cur?'<span class="bdg st-cop"><i data-lucide="map-pin"></i>você está aqui</span>':'')+'</h3>'
+        +'<p>'+s.d+'</p>'
+        +'<div class="rmlist">'+s.items.map(function(i){ return '<span>'+i+'</span>'; }).join('')+'</div></div>';
+    }).join('')
+    +'</div>'
+    +'<details class="qacc" style="margin-top:10px">'
+    +'<summary><i data-lucide="scale" style="width:15px;height:15px"></i>Decisões comerciais em aberto ('+defs.length+')</summary>'
+    +'<div class="opendefs">'+defs.map(function(t){ return '<span>'+t+'</span>'; }).join('')+'</div>'
+    +'</details>'
+    +'<div style="margin-top:14px;max-width:660px">'+RN()+'</div>';
+  if(S.user){
+    return appShell('roadmap','Próximas etapas','Roadmap do produto Dushell',inner);
+  }
+  return pubHead()+'<div class="pick-wrap" style="max-width:860px">'
+    +'<a class="back" onclick="go(\'entry\')"><i data-lucide="arrow-left"></i>Voltar ao início</a>'+inner
+    +'</div>'+pubFoot();
+}
+
+/* ================================================================
+   ROUTER
+   ================================================================ */
+var VIEWS={
+  entry:viewEntry,pick:viewPick,auth:viewAuth,
+  signupB:viewSignupB,signupS:viewSignupS,supPending:viewSupPending,
+  dashB:viewDashB,catalog:viewCatalog,cart:viewCart,
+  quoteNew:viewQuoteNew,quoteSent:viewQuoteSent,
+  quotes:viewQuotes,quoteDetail:viewQuoteDetail,compare:viewCompare,
+  orderCreated:viewOrderCreated,ordersB:viewOrdersB,profileB:viewProfileB,
+  dashS:viewDashS,quotesSup:viewQuotesSup,quoteResp:viewQuoteResp,
+  proposalReview:viewProposalReview,proposalSent:viewProposalSent,
+  productsSup:viewProductsSup,reqProduct:viewReqProduct,ordersS:viewOrdersS,company:viewCompany,
+  notifs:viewNotifs,roadmap:viewRoadmap
+};
+function render(){
+  try{
+    var fn=VIEWS[S.screen]||viewEntry;
+    $('app').innerHTML=fn();
+    document.body.classList.toggle('inapp',!!S.user);
+    saveSessao();                       /* === ROTA DASHBOARD === espelha a sessão p/ dashboard.html */
+    refreshIcons();
+  }catch(e){
+    if(window.console){ console.error(e); }
+    var b=$('boot-msg');
+    if(b){ b.style.display='block'; b.textContent='Erro no protótipo: '+e.message; }
+  }
+}
+window.addEventListener('error',function(e){
+  var b=$('boot-msg');
+  if(b && $('app').querySelector('.boot')){ b.style.display='block'; b.textContent='Falha ao carregar o protótipo: '+(e.message||'erro desconhecido'); }
+});
+window.addEventListener('load',function(){
+  if(!window.DushellValida){
+    setTimeout(function(){ toast('Módulo “dushell-validacao.js” não carregado — CPF/CNPJ não serão validados até que o arquivo esteja na mesma pasta do HTML.','err'); },600);
+  }
+});
+retomarSessao();                        /* === ROTA DASHBOARD === restaura sessão vinda de dashboard.html?retomar=1 */
+render();
+</script>
+</body>
+</html>
